@@ -2,7 +2,7 @@ package db.view;
 
 import javax.swing.*;
 
-import db.session.DB2024Team13_userSession;
+import db.controller.DB2024Team13_userSession;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;

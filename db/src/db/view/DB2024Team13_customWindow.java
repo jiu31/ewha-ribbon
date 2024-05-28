@@ -23,11 +23,25 @@ public class DB2024Team13_customWindow {
         JPanel mainSelectionPanel = new JPanel(new BorderLayout());
         mainSelectionPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JPanel filterPanel = new JPanel(new BorderLayout());
+        JPanel filterPanel = new JPanel();
+        filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
+
+        // 드롭다운 메뉴 패널
+        JPanel dropdownPanel = new JPanel();
+        dropdownPanel.setLayout(new BoxLayout(dropdownPanel, BoxLayout.X_AXIS));
 
         // 드롭다운 메뉴 옵션
         String[] dropdownOptions = {"건물1", "건물2", "건물3", "건물4"};
         JComboBox<String> buildingDropdown = new JComboBox<>(dropdownOptions);
+
+        // 새로운 드롭다운 메뉴 옵션
+        String[] sortOptions = {"주문순", "평점순", "이름순"};
+        JComboBox<String> sortDropdown = new JComboBox<>(sortOptions);
+
+        // 드롭다운 패널에 드롭다운 메뉴 추가
+        dropdownPanel.add(buildingDropdown);
+        dropdownPanel.add(Box.createRigidArea(new Dimension(10, 0))); // 두 드롭다운 사이에 간격 추가
+        dropdownPanel.add(sortDropdown);
 
         // 카테고리 체크박스 패널 생성
         JPanel categoriesPanel = new JPanel(new GridLayout(2, 4, 10, 10));
@@ -39,8 +53,9 @@ public class DB2024Team13_customWindow {
             categoryCheckBoxes.add(checkBox);
         }
 
-        filterPanel.add(buildingDropdown, BorderLayout.NORTH);
-        filterPanel.add(categoriesPanel, BorderLayout.CENTER);
+        filterPanel.add(dropdownPanel);
+        filterPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 드롭다운과 체크박스 사이에 간격 추가
+        filterPanel.add(categoriesPanel);
 
         // 레스토랑 리스트 모델 및 리스트 생성
         DefaultListModel<String> restaurantListModel = new DefaultListModel<>();

@@ -1,4 +1,4 @@
-package db.session;
+package db.controller;
 
 public class DB2024Team13_userSession {
     private static DB2024Team13_userSession instance;
@@ -30,5 +30,9 @@ public class DB2024Team13_userSession {
     public void clearSession() {
         studentId = null;
         nickname = null;
+    }
+
+    public boolean isAdmin() {
+        return "0000000".equals(studentId);
     }
 }

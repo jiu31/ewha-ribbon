@@ -1,8 +1,9 @@
 package db.view;
 
-import db.model.DB2024Team13_login;
-
 import javax.swing.*;
+
+import db.controller.DB2024Team13_login;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

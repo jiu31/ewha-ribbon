@@ -1,6 +1,4 @@
-package db.model;
-
-import db.session.DB2024Team13_userSession;
+package db.controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
