@@ -1,4 +1,4 @@
-package db;
+package db.view;
 
 import javax.swing.*;
 import java.awt.*;

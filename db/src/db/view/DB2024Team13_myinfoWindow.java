@@ -1,6 +1,9 @@
-package db;
+package db.view;
 
 import javax.swing.*;
+
+import db.session.DB2024Team13_userSession;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,6 +14,13 @@ public class DB2024Team13_myinfoWindow {
     public static JPanel createMyInfoPanel(DB2024Team13_mainWindow mainWindow) {
         JPanel myInfoPanel = new JPanel(new BorderLayout());
         myInfoPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // 사용자 정보 표시 패널 생성
+        JPanel userInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel userInfoLabel = new JLabel("안녕하세요, " + DB2024Team13_userSession.getInstance().getNickname() + "님!");
+        userInfoPanel.add(userInfoLabel);
+
+        myInfoPanel.add(userInfoPanel, BorderLayout.NORTH);
 
         // 상단에 라디오 버튼 옵션 추가
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -27,8 +37,6 @@ public class DB2024Team13_myinfoWindow {
         optionGroup.add(reviewOption);
         optionGroup.add(orderOption);
 
-        myInfoPanel.add(optionsPanel, BorderLayout.NORTH);
-
         // 세 개의 독립적인 DefaultListModel과 JList 인스턴스 생성
         DefaultListModel<String> bookmarkListModel = new DefaultListModel<>();
         DefaultListModel<String> reviewListModel = new DefaultListModel<>();
@@ -44,7 +52,13 @@ public class DB2024Team13_myinfoWindow {
         listContainerPanel.add(new JScrollPane(reviewList), "리뷰 조회");
         listContainerPanel.add(new JScrollPane(orderList), "주문 조회");
 
-        myInfoPanel.add(listContainerPanel, BorderLayout.CENTER);
+        // 옵션 패널과 리스트 컨테이너 패널을 하나의 패널에 넣고 수직으로 배치
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.add(optionsPanel);
+        centerPanel.add(listContainerPanel);
+
+        myInfoPanel.add(centerPanel, BorderLayout.CENTER);
 
         // 예시 데이터 추가 (추후 데이터베이스 연결 부분)
         addSampleData(bookmarkListModel, reviewListModel, orderListModel);

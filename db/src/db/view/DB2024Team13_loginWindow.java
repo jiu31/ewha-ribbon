@@ -1,4 +1,6 @@
-package db;
+package db.view;
+
+import db.model.DB2024Team13_login;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class DB2024Team13_loginWindow {
-    public static void main(String[] args) {
+    public static void displayLoginWindow() {
         // 로그인 프레임 생성
         JFrame loginFrame = new JFrame("Login");
         loginFrame.setSize(800, 600);
@@ -82,8 +84,8 @@ public class DB2024Team13_loginWindow {
             public void actionPerformed(ActionEvent e) {
                 String user = studentIdTextField.getText();
                 String password = new String(passwordField.getPassword());
-                
-                if (validateLogin(user, password)) {
+
+                if (DB2024Team13_login.validateLogin(user, password)) {
                     JOptionPane.showMessageDialog(loginPanel, "로그인 성공!");
                     showMainWindow(loginFrame);
                 } else {
@@ -91,13 +93,6 @@ public class DB2024Team13_loginWindow {
                 }
             }
         });
-    }
-
-    // 로그인 검증 메소드 (데이터베이스 연결 필요)
-    private static boolean validateLogin(String user, String password) {
-        // 데이터베이스 검증 로직 (현재는 하드코딩된 값 사용)
-        // 실제 구현 시 데이터베이스 연결 및 쿼리 사용
-        return "admin".equals(user) && "password".equals(password);
     }
 
     // 메인 윈도우 표시 메소드
