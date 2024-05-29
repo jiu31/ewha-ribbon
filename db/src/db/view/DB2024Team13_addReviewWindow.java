@@ -18,8 +18,9 @@ public class DB2024Team13_addReviewWindow {
      * 리뷰 추가 창을 생성하고 표시하는 메소드
      *
      * @param restaurantName 레스토랑 이름
+     * @param mainDetailPanel 메인 상세 패널
      */
-    public static void showAddReviewDialog(String restaurantName) {
+    public static void showAddReviewDialog(String restaurantName, JPanel mainDetailPanel) {
         JDialog reviewDialog = new JDialog((Frame) null, "리뷰 추가", true);
         reviewDialog.setSize(400, 300);
         reviewDialog.setLocationRelativeTo(null);
@@ -69,6 +70,7 @@ public class DB2024Team13_addReviewWindow {
                 String studentId = DB2024Team13_userSession.getInstance().getStudentId();
                 if (addReviewToDatabase(restaurantName, studentId, star)) {
                     JOptionPane.showMessageDialog(reviewDialog, "리뷰가 성공적으로 추가되었습니다.");
+                    DB2024Team13_detailWindow.refreshDetailPanel(mainDetailPanel, restaurantName);
                     reviewDialog.dispose();
                 } else {
                     JOptionPane.showMessageDialog(reviewDialog, "리뷰 추가 중 오류가 발생했습니다.");

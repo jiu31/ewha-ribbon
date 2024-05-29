@@ -8,8 +8,9 @@ import java.util.List;
 
 public class DB2024Team13_mainWindow {
     // Constants
-    private static final int WINDOW_WIDTH = 800;
-    private static final int WINDOW_HEIGHT = 670;
+    private static final int WINDOW_WIDTH = 900;
+    private static final int WINDOW_HEIGHT = 700;
+  
     private static final Color COLOR_EWHA_GREEN = new Color(0, 72, 42);
     private static final Color COLOR_SELECTED_BUTTON = Color.GRAY;
     private static final Color COLOR_DEFAULT_BUTTON = Color.LIGHT_GRAY;
