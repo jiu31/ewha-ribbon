@@ -9,10 +9,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class DB2024Team13_loginWindow {
+    private static final int WINDOW_WIDTH = 900;
+    private static final int WINDOW_HEIGHT = 700;
+    
     public static void displayLoginWindow() {
         // Create login frame
         JFrame loginFrame = new JFrame("Login");
-        loginFrame.setSize(800, 600);
+        loginFrame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setLocationRelativeTo(null); // Center the frame
 

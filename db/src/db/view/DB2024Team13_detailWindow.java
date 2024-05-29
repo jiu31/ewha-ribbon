@@ -2,6 +2,7 @@ package db.view;
 
 import db.controller.DB2024Team13_userSession;
 import db.controller.DB2024Team13_connection;
+import db.view.DB2024Team13_utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,6 +29,7 @@ public class DB2024Team13_detailWindow {
     public static JPanel createDetailPanel(String restaurant) {
         // 로그인한 사용자가 관리자 여부 확인
         boolean isAdmin = DB2024Team13_userSession.getInstance().isAdmin();
+        String studentId = DB2024Team13_userSession.getInstance().getStudentId();
 
         // 메인 상세 정보 패널 생성
         JPanel mainDetailPanel = new JPanel(new BorderLayout());
@@ -48,10 +50,10 @@ public class DB2024Team13_detailWindow {
             bookmarkButton.setForeground(COLOR_NOT_BOOKMARKED_TEXT);
             bookmarkButton.setOpaque(true);
             bookmarkButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            
+
             // 북마크 버튼 클릭 이벤트 추가
             bookmarkButton.addActionListener(new ActionListener() {
-                private boolean isBookmarked = false;
+                private boolean isBookmarked = isRestaurantBookmarked(studentId, restaurant);
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -59,12 +61,19 @@ public class DB2024Team13_detailWindow {
                     if (isBookmarked) {
                         bookmarkButton.setBackground(COLOR_BOOKMARKED);
                         bookmarkButton.setForeground(COLOR_BOOKMARKED_TEXT);
+                        addBookmark(studentId, restaurant);
                     } else {
                         bookmarkButton.setBackground(COLOR_NOT_BOOKMARKED);
                         bookmarkButton.setForeground(COLOR_NOT_BOOKMARKED_TEXT);
+                        removeBookmark(studentId, restaurant);
                     }
                 }
             });
+
+            if (isRestaurantBookmarked(studentId, restaurant)) {
+                bookmarkButton.setBackground(COLOR_BOOKMARKED);
+                bookmarkButton.setForeground(COLOR_BOOKMARKED_TEXT);
+            }
 
             titlePanel.add(bookmarkButton, BorderLayout.EAST);
         }
@@ -78,26 +87,34 @@ public class DB2024Team13_detailWindow {
 
         // 상세 정보 레이블 추가
         JLabel avgRatingLabel = createDetailLabel("별점: ");
+        avgRatingLabel.setName("avgRatingLabel");
         JSeparator separator1 = createSeparator();
         JLabel categoryLabel = createDetailLabel("카테고리: ");
+        categoryLabel.setName("categoryLabel");
         JSeparator separator2 = createSeparator();
         JLabel bestMenuLabel = createDetailLabel("대표메뉴: ");
+        bestMenuLabel.setName("bestMenuLabel");
         JSeparator separator3 = createSeparator();
         JLabel menuLabel = createDetailLabel("전체메뉴 ");
-        JLabel menuInfoLabel1 = createDetailLabel("");
-        JLabel menuInfoLabel2 = createDetailLabel("");
-        JLabel menuInfoLabel3 = createDetailLabel("");
+        JPanel menuInfoPanel = new JPanel();
+        menuInfoPanel.setLayout(new BoxLayout(menuInfoPanel, BoxLayout.Y_AXIS));
+        menuInfoPanel.setName("menuInfoPanel");
         JSeparator separator4 = createSeparator();
         JLabel sectionLabel = createDetailLabel("구역 이름: ");
+        sectionLabel.setName("sectionLabel");
         JSeparator separator5 = createSeparator();
         JLabel locationLabel = createDetailLabel("위치: ");
+        locationLabel.setName("locationLabel");
         JSeparator separator6 = createSeparator();
         JLabel veganLabel = createDetailLabel("비건메뉴 여부: ");
+        veganLabel.setName("veganLabel");
         JSeparator separator7 = createSeparator();
         JLabel eatAloneLabel = createDetailLabel("혼밥 가능 여부: ");
+        eatAloneLabel.setName("eatAloneLabel");
         JSeparator separator8 = createSeparator();
         JLabel breaktimeLabel = createDetailLabel("브레이크타임 유무: ");
-        
+        breaktimeLabel.setName("breaktimeLabel");
+
         detailsContentPanel.add(Box.createVerticalStrut(10)); // 공백 추가
         detailsContentPanel.add(avgRatingLabel);
         detailsContentPanel.add(Box.createVerticalStrut(10)); // 공백 추가
@@ -113,9 +130,7 @@ public class DB2024Team13_detailWindow {
         detailsContentPanel.add(Box.createVerticalStrut(10)); // 공백 추가
         detailsContentPanel.add(menuLabel);
         detailsContentPanel.add(Box.createVerticalStrut(10)); // 공백 추가
-        detailsContentPanel.add(menuInfoLabel1);
-        detailsContentPanel.add(menuInfoLabel2);
-        detailsContentPanel.add(menuInfoLabel3);
+        detailsContentPanel.add(menuInfoPanel);
         detailsContentPanel.add(Box.createVerticalStrut(10)); // 공백 추가
         detailsContentPanel.add(separator4);
         detailsContentPanel.add(Box.createVerticalStrut(10)); // 공백 추가
@@ -144,18 +159,56 @@ public class DB2024Team13_detailWindow {
 
         mainDetailPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // 리뷰 추가 또는 정보 수정 버튼 생성
+        // 리뷰 추가 또는 정보 수정 및 삭제 버튼 생성
         JButton actionButton = new JButton(isAdmin ? "정보 수정" : "리뷰 추가");
         actionButton.setFont(new Font("나눔고딕", Font.BOLD, 15));
-        
+
+        JButton deleteButton = new JButton("삭제");
+        deleteButton.setFont(new Font("나눔고딕", Font.BOLD, 15));
+
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
+        if (isAdmin) {
+            buttonPanel.add(deleteButton); // 삭제 버튼을 정보 수정 버튼 왼쪽에 추가
+        }
         buttonPanel.add(actionButton);
-        
+
         mainDetailPanel.add(buttonPanel, BorderLayout.SOUTH);
 
+        // 삭제 버튼 클릭 이벤트 추가
+        if (isAdmin) {
+            deleteButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int confirm = JOptionPane.showConfirmDialog(null, "정말로 이 레스토랑을 삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        DB2024Team13_utils.deleteRestaurant(restaurant);
+                        JOptionPane.showMessageDialog(null, "레스토랑이 삭제되었습니다.");
+                        // 상세 정보 패널을 초기화하거나 다른 화면으로 전환하는 로직 추가 가능
+                    }
+                }
+            });
+
+            actionButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    DB2024Team13_adminWindow.showAdminWindow(restaurant, mainDetailPanel);
+                }
+            });
+        } else {
+            // 리뷰 추가 버튼 클릭 이벤트 추가
+            actionButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    DB2024Team13_addReviewWindow.showAddReviewDialog(restaurant, mainDetailPanel);
+                }
+            });
+        }
+
         // 데이터베이스에서 세부 정보를 불러와 레이블에 설정
-        loadRestaurantDetails(restaurant, bestMenuLabel, menuInfoLabel1, menuInfoLabel2, menuInfoLabel3, locationLabel, veganLabel, eatAloneLabel, breaktimeLabel, avgRatingLabel, categoryLabel, sectionLabel);
+        loadRestaurantDetails(restaurant, bestMenuLabel, menuInfoPanel, locationLabel, veganLabel, eatAloneLabel, breaktimeLabel, avgRatingLabel, categoryLabel, sectionLabel);
 
         return mainDetailPanel;
     }
@@ -188,9 +241,7 @@ public class DB2024Team13_detailWindow {
      *
      * @param restaurantName 레스토랑 이름
      * @param bestMenuLabel 대표메뉴 레이블
-     * @param menuInfoLabel1 전체메뉴 1 레이블
-     * @param menuInfoLabel2 전체메뉴 2 레이블
-     * @param menuInfoLabel3 전체메뉴 3 레이블
+     * @param menuInfoPanel 전체메뉴 패널
      * @param locationLabel 위치 레이블
      * @param veganLabel 비건메뉴 여부 레이블
      * @param eatAloneLabel 혼밥 가능 여부 레이블
@@ -198,8 +249,9 @@ public class DB2024Team13_detailWindow {
      * @param avgRatingLabel 별점 레이블
      * @param categoryLabel 카테고리 레이블
      * @param sectionLabel 구역 이름 레이블
+     * @return 성공 여부
      */
-    private static void loadRestaurantDetails(String restaurantName, JLabel bestMenuLabel, JLabel menuInfoLabel1, JLabel menuInfoLabel2, JLabel menuInfoLabel3, JLabel locationLabel, JLabel veganLabel, JLabel eatAloneLabel, JLabel breaktimeLabel, JLabel avgRatingLabel, JLabel categoryLabel, JLabel sectionLabel) {
+    private static boolean loadRestaurantDetails(String restaurantName, JLabel bestMenuLabel, JPanel menuInfoPanel, JLabel locationLabel, JLabel veganLabel, JLabel eatAloneLabel, JLabel breaktimeLabel, JLabel avgRatingLabel, JLabel categoryLabel, JLabel sectionLabel) {
         String detailsQuery = "SELECT r.best_menu, r.location, r.breaktime, r.eat_alone, r.category, r.section_name, AVG(rv.star) AS avg_rating " +
                        "FROM DB2024_restaurant r " +
                        "LEFT JOIN DB2024_review rv ON r.rest_name = rv.rest_name " +
@@ -224,33 +276,135 @@ public class DB2024Team13_detailWindow {
                     avgRatingLabel.setText("별점: " + String.format("%.2f", rs.getDouble("avg_rating")));
                     categoryLabel.setText("카테고리: " + rs.getString("category"));
                     sectionLabel.setText("구역 이름: " + rs.getString("section_name"));
+                } else {
+                    return false;
                 }
             }
 
             menuStmt.setString(1, restaurantName);
-            int menuCount = 0;
             boolean hasVegan = false;
+            menuInfoPanel.removeAll(); // 패널 초기화
+            menuInfoPanel.setBackground(Color.WHITE); // 패널 배경색 설정
             try (ResultSet rs = menuStmt.executeQuery()) {
-                while (rs.next() && menuCount < 3) {
+                while (rs.next()) {
                     String menuInfo = rs.getString("menu_name") + " - " +
                                       rs.getInt("price") + "원" +
                                       " (" + (rs.getBoolean("vegan") ? "비건" : "논비건") + ")";
                     if (rs.getBoolean("vegan")) {
                         hasVegan = true;
                     }
-                    if (menuCount == 0) {
-                        menuInfoLabel1.setText(menuInfo);
-                    } else if (menuCount == 1) {
-                        menuInfoLabel2.setText(menuInfo);
-                    } else if (menuCount == 2) {
-                        menuInfoLabel3.setText(menuInfo);
-                    }
-                    menuCount++;
+                    JLabel menuLabel = createDetailLabel(menuInfo);
+                    menuLabel.setOpaque(false); // 레이블 배경 투명 설정
+                    menuInfoPanel.add(menuLabel);
                 }
             }
             veganLabel.setText("비건메뉴 여부: " + (hasVegan ? "O" : "X"));
+            menuInfoPanel.revalidate(); // 패널 갱신
+            menuInfoPanel.repaint(); // 패널 다시 그리기
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 주어진 레스토랑이 북마크되었는지 확인하는 메소드
+     *
+     * @param studentId 학생 ID
+     * @param restaurantName 레스토랑 이름
+     * @return 북마크 여부
+     */
+    private static boolean isRestaurantBookmarked(String studentId, String restaurantName) {
+        String query = "SELECT COUNT(*) FROM DB2024_bookmark WHERE student_id = ? AND rest_name = ?";
+        try (Connection conn = DB2024Team13_connection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, studentId);
+            stmt.setString(2, restaurantName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
+    }
+
+    /**
+     * 주어진 레스토랑을 북마크에 추가하는 메소드
+     *
+     * @param studentId 학생 ID
+     * @param restaurantName 레스토랑 이름
+     */
+    private static void addBookmark(String studentId, String restaurantName) {
+        String query = "INSERT INTO DB2024_bookmark (student_id, rest_name) VALUES (?, ?)";
+        try (Connection conn = DB2024Team13_connection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, studentId);
+            stmt.setString(2, restaurantName);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 주어진 레스토랑을 북마크에서 삭제하는 메소드
+     *
+     * @param studentId 학생 ID
+     * @param restaurantName 레스토랑 이름
+     */
+    private static void removeBookmark(String studentId, String restaurantName) {
+        String query = "DELETE FROM DB2024_bookmark WHERE student_id = ? AND rest_name = ?";
+        try (Connection conn = DB2024Team13_connection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, studentId);
+            stmt.setString(2, restaurantName);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 패널을 갱신하는 메소드
+     *
+     * @param mainDetailPanel 메인 상세 패널
+     * @param restaurant 레스토랑 이름
+     */
+    public static void refreshDetailPanel(JPanel mainDetailPanel, String restaurant) {
+        JLabel bestMenuLabel = (JLabel) findComponentByName(mainDetailPanel, "bestMenuLabel");
+        JPanel menuInfoPanel = (JPanel) findComponentByName(mainDetailPanel, "menuInfoPanel");
+        JLabel locationLabel = (JLabel) findComponentByName(mainDetailPanel, "locationLabel");
+        JLabel veganLabel = (JLabel) findComponentByName(mainDetailPanel, "veganLabel");
+        JLabel eatAloneLabel = (JLabel) findComponentByName(mainDetailPanel, "eatAloneLabel");
+        JLabel breaktimeLabel = (JLabel) findComponentByName(mainDetailPanel, "breaktimeLabel");
+        JLabel avgRatingLabel = (JLabel) findComponentByName(mainDetailPanel, "avgRatingLabel");
+        JLabel categoryLabel = (JLabel) findComponentByName(mainDetailPanel, "categoryLabel");
+        JLabel sectionLabel = (JLabel) findComponentByName(mainDetailPanel, "sectionLabel");
+
+        loadRestaurantDetails(restaurant, bestMenuLabel, menuInfoPanel, locationLabel, veganLabel, eatAloneLabel, breaktimeLabel, avgRatingLabel, categoryLabel, sectionLabel);
+
+        mainDetailPanel.revalidate();
+        mainDetailPanel.repaint();
+    }
+
+    // 패널 내에서 이름으로 컴포넌트를 찾는 유틸리티 메서드 추가
+    private static Component findComponentByName(Container container, String name) {
+        for (Component component : container.getComponents()) {
+            if (name.equals(component.getName())) {
+                return component;
+            }
+            if (component instanceof Container) {
+                Component found = findComponentByName((Container) component, name);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }
