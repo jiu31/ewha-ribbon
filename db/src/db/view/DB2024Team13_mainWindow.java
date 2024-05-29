@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DB2024Team13_mainWindow {
-    // 상수 정의
+    // Constants
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
     private static final Color COLOR_EWHA_GREEN = new Color(0, 72, 42);
@@ -19,7 +19,7 @@ public class DB2024Team13_mainWindow {
     private final JPanel mainPanel = new JPanel(new BorderLayout());
     private final List<JButton> sidebarButtonList = new ArrayList<>();
 
-    // 메인 윈도우 실행 메소드
+    // Main window execution method
     public static void launchMainWindow() {
         SwingUtilities.invokeLater(() -> {
             DB2024Team13_mainWindow app = new DB2024Team13_mainWindow();
@@ -28,7 +28,7 @@ public class DB2024Team13_mainWindow {
         });
     }
 
-    // 메인 프레임 생성
+    // Create main frame
     private JFrame createMainFrame() {
         JFrame frame = new JFrame("EwhaRibbon");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,7 +42,7 @@ public class DB2024Team13_mainWindow {
         return frame;
     }
 
-    // 제목 바 패널 생성
+    // Create title bar panel
     public JPanel createTitleBar() {
         JPanel titleBarPanel = new JPanel(new BorderLayout());
         titleBarPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, 50));
@@ -56,7 +56,7 @@ public class DB2024Team13_mainWindow {
         return titleBarPanel;
     }
 
-    // 사이드바 패널 생성
+    // Create sidebar panel
     public JPanel createSidebar() {
         JPanel sidebarPanel = new JPanel();
         sidebarPanel.setPreferredSize(new Dimension(200, WINDOW_HEIGHT));
@@ -66,13 +66,15 @@ public class DB2024Team13_mainWindow {
         addSidebarButton(sidebarPanel, "메인", e -> displayContent(DB2024Team13_customWindow.createSelectionPanel(this)));
         addSidebarButton(sidebarPanel, "검색", e -> displayContent(DB2024Team13_searchWindow.createSearchPanel(this)));
         addSidebarButton(sidebarPanel, "내정보", e -> displayContent(DB2024Team13_myinfoWindow.createMyInfoPanel(this)));
-
         sidebarPanel.add(Box.createVerticalGlue());
+        
+        // Add logout button
+        addLogoutButton(sidebarPanel);
 
         return sidebarPanel;
     }
 
-    // 사이드바에 버튼 추가
+    // Add sidebar button
     private void addSidebarButton(JPanel sidebarPanel, String text, ActionListener actionListener) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -87,7 +89,22 @@ public class DB2024Team13_mainWindow {
         sidebarPanel.add(button);
     }
 
-    // 선택된 버튼 강조
+    // Add logout button
+    private void addLogoutButton(JPanel sidebarPanel) {
+        JButton logoutButton = new JButton("로그아웃");
+        logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        logoutButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        logoutButton.setBackground(COLOR_DEFAULT_BUTTON);
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.addActionListener(e -> {
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(logoutButton);
+            frame.dispose();  // Close the current window
+            DB2024Team13_loginWindow.displayLoginWindow();  // Display the login window
+        });
+        sidebarPanel.add(logoutButton);
+    }
+
+    // Highlight selected button
     private void setSelectedButtonHighlight(JButton selectedButton) {
         for (JButton button : sidebarButtonList) {
             if (button == selectedButton) {
@@ -100,18 +117,18 @@ public class DB2024Team13_mainWindow {
         }
     }
 
-    // 메인 콘텐츠 패널 반환
+    // Return main content panel
     public JPanel getMainPanel() {
         return mainPanel;
     }
 
-    // 상세 정보 보여주기
+    // Display detailed information
     public void displayDetail(String restaurant) {
         JPanel detailPanel = DB2024Team13_detailWindow.createDetailPanel(restaurant);
         displayContent(detailPanel);
     }
 
-    // 콘텐츠 보여주기
+    // Display content
     private void displayContent(Component component) {
         mainPanel.removeAll();
         mainPanel.add(component, BorderLayout.CENTER);
