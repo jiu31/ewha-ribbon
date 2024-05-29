@@ -2,6 +2,7 @@ package db.view;
 
 import db.controller.DB2024Team13_userSession;
 import db.controller.DB2024Team13_connection;
+import db.view.DB2024Team13_addReviewWindow;
 
 import javax.swing.*;
 import java.awt.*;
@@ -153,6 +154,16 @@ public class DB2024Team13_detailWindow {
         buttonPanel.add(actionButton);
         
         mainDetailPanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        // 리뷰 추가 버튼 클릭 이벤트 추가
+        if (!isAdmin) {
+            actionButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                	DB2024Team13_addReviewWindow.showAddReviewDialog(restaurant);
+                }
+            });
+        }
 
         // 데이터베이스에서 세부 정보를 불러와 레이블에 설정
         loadRestaurantDetails(restaurant, bestMenuLabel, menuInfoLabel1, menuInfoLabel2, menuInfoLabel3, locationLabel, veganLabel, eatAloneLabel, breaktimeLabel, avgRatingLabel, categoryLabel, sectionLabel);

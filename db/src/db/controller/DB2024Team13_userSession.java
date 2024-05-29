@@ -35,4 +35,5 @@ public class DB2024Team13_userSession {
     public boolean isAdmin() {
         return "0000".equals(studentId);
     }
+    
 }

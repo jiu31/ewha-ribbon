@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 
 public class DB2024Team13_loginWindow {
     private static final int WINDOW_WIDTH = 800;
-    private static final int WINDOW_HEIGHT = 700;
+    private static final int WINDOW_HEIGHT = 670;
     
     public static void displayLoginWindow() {
         // Create login frame
