@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DB2024Team13_searchWindow {
-    
+
     public static JPanel createSearchPanel(DB2024Team13_mainWindow mainWindow) {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -53,7 +53,10 @@ public class DB2024Team13_searchWindow {
         });
 
         addRestaurantBtn.addActionListener(e -> {
-            DB2024Team13_addRestaurantWindow.showAddRestaurantDialog(mainPanel);
+            boolean success = DB2024Team13_addRestaurantWindow.showAddRestaurantDialog(mainPanel); // 성공 여부 확인
+            if (success) {
+                filterRestaurantList("", restaurantListModel); // 성공적으로 추가되면 리스트 업데이트
+            }
         });
 
         loadRestaurantList("", restaurantListModel);
@@ -63,11 +66,11 @@ public class DB2024Team13_searchWindow {
 
     private static void loadRestaurantList(String searchText, DefaultListModel<String> listModel) {
         listModel.clear();
-        String query = "SELECT rest_name FROM DB2024_restaurant WHERE rest_name LIKE ?";
-        
+        String query = "SELECT rest_name FROM DB2024_restaurant WHERE rest_name LIKE ? ORDER BY rest_name";
+
         try (Connection conn = DB2024Team13_connection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            
+
             stmt.setString(1, "%" + searchText + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
