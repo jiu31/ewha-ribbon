@@ -1,15 +1,18 @@
 package db.view;
 
+import db.controller.DB2024Team13_connection;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class DB2024Team13_customWindow {
 
@@ -30,15 +33,14 @@ public class DB2024Team13_customWindow {
         JPanel dropdownPanel = new JPanel();
         dropdownPanel.setLayout(new BoxLayout(dropdownPanel, BoxLayout.X_AXIS));
 
-        // 드롭다운 메뉴 옵션
-        String[] dropdownOptions = {"건물1", "건물2", "건물3", "건물4"};
-        JComboBox<String> buildingDropdown = new JComboBox<>(dropdownOptions);
-
         // 새로운 드롭다운 메뉴 옵션
         String[] sortOptions = {"주문순", "평점순", "이름순"};
         JComboBox<String> sortDropdown = new JComboBox<>(sortOptions);
 
         // 드롭다운 패널에 드롭다운 메뉴 추가
+        JComboBox<String> buildingDropdown = new JComboBox<>();
+        Map<String, List<Restaurant>> buildingRestaurantMap = loadBuildingsAndRestaurants(buildingDropdown);
+
         dropdownPanel.add(buildingDropdown);
         dropdownPanel.add(Box.createRigidArea(new Dimension(10, 0))); // 두 드롭다운 사이에 간격 추가
         dropdownPanel.add(sortDropdown);
@@ -64,89 +66,19 @@ public class DB2024Team13_customWindow {
         mainSelectionPanel.add(filterPanel, BorderLayout.NORTH);
         mainSelectionPanel.add(restaurantScrollPane, BorderLayout.CENTER);
 
-        // 예시 데이터 추가
-        Map<String, List<Restaurant>> buildingRestaurantMap = new HashMap<>();
-        buildingRestaurantMap.put("건물1", List.of(
-                new Restaurant("Restaurant A", "건물1", "Menu 1", "한식", false, true),
-                new Restaurant("Restaurant B", "건물1", "Menu 2", "중식", true, false),
-                new Restaurant("Restaurant C", "건물1", "Menu 3", "일식", false, true),
-                // 추가 데이터
-                new Restaurant("Restaurant D", "건물1", "Menu 4", "양식", false, true),
-                new Restaurant("Restaurant E", "건물1", "Menu 5", "분식", true, false),
-                new Restaurant("Restaurant F", "건물1", "Menu 6", "한식", false, true),
-                new Restaurant("Restaurant G", "건물1", "Menu 7", "중식", true, false),
-                new Restaurant("Restaurant H", "건물1", "Menu 8", "일식", false, true),
-                new Restaurant("Restaurant I", "건물1", "Menu 9", "양식", false, true),
-                new Restaurant("Restaurant J", "건물1", "Menu 10", "분식", true, false),
-                new Restaurant("Restaurant K", "건물1", "Menu 11", "한식", false, true),
-                new Restaurant("Restaurant L", "건물1", "Menu 12", "중식", true, false),
-                new Restaurant("Restaurant M", "건물1", "Menu 13", "일식", false, true),
-                new Restaurant("Restaurant N", "건물1", "Menu 14", "양식", false, true),
-                new Restaurant("Restaurant O", "건물1", "Menu 15", "분식", true, false)
-        ));
-        buildingRestaurantMap.put("건물2", List.of(
-                new Restaurant("Restaurant P", "건물2", "Menu 1", "아시안", false, true),
-                new Restaurant("Restaurant Q", "건물2", "Menu 2", "패스트푸드", true, false),
-                new Restaurant("Restaurant R", "건물2", "Menu 3", "카페", false, true),
-                // 추가 데이터
-                new Restaurant("Restaurant S", "건물2", "Menu 4", "한식", false, true),
-                new Restaurant("Restaurant T", "건물2", "Menu 5", "중식", true, false),
-                new Restaurant("Restaurant U", "건물2", "Menu 6", "일식", false, true),
-                new Restaurant("Restaurant V", "건물2", "Menu 7", "양식", false, true),
-                new Restaurant("Restaurant W", "건물2", "Menu 8", "분식", true, false),
-                new Restaurant("Restaurant X", "건물2", "Menu 9", "한식", false, true),
-                new Restaurant("Restaurant Y", "건물2", "Menu 10", "중식", true, false),
-                new Restaurant("Restaurant Z", "건물2", "Menu 11", "일식", false, true),
-                new Restaurant("Restaurant AA", "건물2", "Menu 12", "양식", false, true),
-                new Restaurant("Restaurant AB", "건물2", "Menu 13", "분식", true, false),
-                new Restaurant("Restaurant AC", "건물2", "Menu 14", "한식", false, true),
-                new Restaurant("Restaurant AD", "건물2", "Menu 15", "중식", true, false)
-        ));
-        buildingRestaurantMap.put("건물3", List.of(
-                new Restaurant("Restaurant AE", "건물3", "Menu 1", "일식", false, true),
-                new Restaurant("Restaurant AF", "건물3", "Menu 2", "양식", true, false),
-                new Restaurant("Restaurant AG", "건물3", "Menu 3", "분식", false, true),
-                // 추가 데이터
-                new Restaurant("Restaurant AH", "건물3", "Menu 4", "아시안", false, true),
-                new Restaurant("Restaurant AI", "건물3", "Menu 5", "패스트푸드", true, false),
-                new Restaurant("Restaurant AJ", "건물3", "Menu 6", "카페", false, true),
-                new Restaurant("Restaurant AK", "건물3", "Menu 7", "한식", false, true),
-                new Restaurant("Restaurant AL", "건물3", "Menu 8", "중식", true, false),
-                new Restaurant("Restaurant AM", "건물3", "Menu 9", "일식", false, true),
-                new Restaurant("Restaurant AN", "건물3", "Menu 10", "양식", false, true),
-                new Restaurant("Restaurant AO", "건물3", "Menu 11", "분식", true, false),
-                new Restaurant("Restaurant AP", "건물3", "Menu 12", "아시안", false, true),
-                new Restaurant("Restaurant AQ", "건물3", "Menu 13", "패스트푸드", true, false),
-                new Restaurant("Restaurant AR", "건물3", "Menu 14", "카페", false, true),
-                new Restaurant("Restaurant AS", "건물3", "Menu 15", "한식", false, true)
-        ));
-        buildingRestaurantMap.put("건물4", List.of(
-                new Restaurant("Restaurant AT", "건물4", "Menu 1", "중식", false, true),
-                new Restaurant("Restaurant AU", "건물4", "Menu 2", "일식", true, false),
-                new Restaurant("Restaurant AV", "건물4", "Menu 3", "양식", false, true),
-                // 추가 데이터
-                new Restaurant("Restaurant AW", "건물4", "Menu 4", "분식", false, true),
-                new Restaurant("Restaurant AX", "건물4", "Menu 5", "아시안", true, false),
-                new Restaurant("Restaurant AY", "건물4", "Menu 6", "패스트푸드", false, true),
-                new Restaurant("Restaurant AZ", "건물4", "Menu 7", "카페", false, true),
-                new Restaurant("Restaurant BA", "건물4", "Menu 8", "한식", true, false),
-                new Restaurant("Restaurant BB", "건물4", "Menu 9", "중식", false, true),
-                new Restaurant("Restaurant BC", "건물4", "Menu 10", "일식", false, true),
-                new Restaurant("Restaurant BD", "건물4", "Menu 11", "양식", true, false),
-                new Restaurant("Restaurant BE", "건물4", "Menu 12", "분식", false, true),
-                new Restaurant("Restaurant BF", "건물4", "Menu 13", "아시안", false, true),
-                new Restaurant("Restaurant BG", "건물4", "Menu 14", "패스트푸드", true, false),
-                new Restaurant("Restaurant BH", "건물4", "Menu 15", "카페", false, true)
-        ));
-
         // 드롭다운 선택에 따라 리스트를 필터링하는 리스너 추가
         buildingDropdown.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     String selectedBuilding = (String) buildingDropdown.getSelectedItem();
-                    List<Restaurant> restaurants = buildingRestaurantMap.getOrDefault(selectedBuilding, new ArrayList<>());
-                    filterAndDisplayRestaurants(restaurants, restaurantListModel, categoryCheckBoxes);
+                    List<Restaurant> restaurants;
+                    if ("전체".equals(selectedBuilding)) {
+                        restaurants = getAllRestaurants(buildingRestaurantMap);
+                    } else {
+                        restaurants = buildingRestaurantMap.getOrDefault(selectedBuilding, new ArrayList<>());
+                    }
+                    filterAndDisplayRestaurants(restaurants, restaurantListModel, categoryCheckBoxes, (String) sortDropdown.getSelectedItem());
                 }
             }
         });
@@ -157,16 +89,37 @@ public class DB2024Team13_customWindow {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
                     String selectedBuilding = (String) buildingDropdown.getSelectedItem();
-                    List<Restaurant> restaurants = buildingRestaurantMap.getOrDefault(selectedBuilding, new ArrayList<>());
-                    filterAndDisplayRestaurants(restaurants, restaurantListModel, categoryCheckBoxes);
+                    List<Restaurant> restaurants;
+                    if ("전체".equals(selectedBuilding)) {
+                        restaurants = getAllRestaurants(buildingRestaurantMap);
+                    } else {
+                        restaurants = buildingRestaurantMap.getOrDefault(selectedBuilding, new ArrayList<>());
+                    }
+                    filterAndDisplayRestaurants(restaurants, restaurantListModel, categoryCheckBoxes, (String) sortDropdown.getSelectedItem());
                 }
             });
         }
 
+        // 정렬 기준 변경에 따라 리스트를 재정렬하는 리스너 추가
+        sortDropdown.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    String selectedBuilding = (String) buildingDropdown.getSelectedItem();
+                    List<Restaurant> restaurants;
+                    if ("전체".equals(selectedBuilding)) {
+                        restaurants = getAllRestaurants(buildingRestaurantMap);
+                    } else {
+                        restaurants = buildingRestaurantMap.getOrDefault(selectedBuilding, new ArrayList<>());
+                    }
+                    filterAndDisplayRestaurants(restaurants, restaurantListModel, categoryCheckBoxes, (String) sortDropdown.getSelectedItem());
+                }
+            }
+        });
+
         // 초기 데이터를 설정 (첫 번째 건물의 레스토랑 리스트를 미리 표시)
-        String initialBuilding = dropdownOptions[0];
-        List<Restaurant> initialRestaurantList = buildingRestaurantMap.getOrDefault(initialBuilding, new ArrayList<>());
-        filterAndDisplayRestaurants(initialRestaurantList, restaurantListModel, categoryCheckBoxes);
+        buildingDropdown.insertItemAt("전체", 0);
+        buildingDropdown.setSelectedIndex(0);
 
         // 레스토랑 리스트에 마우스 리스너 추가 (더블 클릭 시 상세 정보 보기)
         restaurantJList.addMouseListener(new MouseAdapter() {
@@ -189,9 +142,11 @@ public class DB2024Team13_customWindow {
      * @param restaurants 레스토랑 리스트
      * @param listModel 리스트 모델
      * @param checkBoxes 카테고리 체크박스 리스트
+     * @param sortOption 정렬 옵션
      */
-    private static void filterAndDisplayRestaurants(List<Restaurant> restaurants, DefaultListModel<String> listModel, List<JCheckBox> checkBoxes) {
+    private static void filterAndDisplayRestaurants(List<Restaurant> restaurants, DefaultListModel<String> listModel, List<JCheckBox> checkBoxes, String sortOption) {
         listModel.clear();
+        List<Restaurant> filteredRestaurants = new ArrayList<>();
         for (Restaurant restaurant : restaurants) {
             boolean matchesCategory = checkBoxes.stream()
                     .filter(JCheckBox::isSelected)
@@ -199,9 +154,116 @@ public class DB2024Team13_customWindow {
                     .anyMatch(category -> restaurant.getCategory().contains(category));
 
             if (matchesCategory || checkBoxes.stream().noneMatch(JCheckBox::isSelected)) {
+                filteredRestaurants.add(restaurant);
+            }
+        }
+
+        // 정렬
+        sortRestaurants(filteredRestaurants, sortOption);
+
+        Set<String> restaurantNames = new HashSet<>();
+        for (Restaurant restaurant : filteredRestaurants) {
+            if (restaurantNames.add(restaurant.getName())) {
                 listModel.addElement(restaurant.getName());
             }
         }
+    }
+
+    /**
+     * 레스토랑 목록을 정렬하는 메소드
+     *
+     * @param restaurants 레스토랑 리스트
+     * @param sortOption 정렬 옵션
+     */
+    private static void sortRestaurants(List<Restaurant> restaurants, String sortOption) {
+        switch (sortOption) {
+            case "주문순":
+                restaurants.sort(Comparator.comparingInt(Restaurant::getOrderCount).reversed());
+                break;
+            case "평점순":
+                restaurants.sort(Comparator.comparingDouble(Restaurant::getAvgRating).reversed());
+                break;
+            case "이름순":
+                restaurants.sort(Comparator.comparing(Restaurant::getName));
+                break;
+        }
+    }
+
+    /**
+     * 데이터베이스에서 건물과 레스토랑 목록을 가져오는 메소드
+     *
+     * @param buildingDropdown 건물 드롭다운 컴포넌트
+     * @return 건물별 레스토랑 목록을 담은 맵
+     */
+    private static Map<String, List<Restaurant>> loadBuildingsAndRestaurants(JComboBox<String> buildingDropdown) {
+        Map<String, List<Restaurant>> buildingRestaurantMap = new HashMap<>();
+        Map<String, String> buildingSectionMap = new HashMap<>();
+        String buildingQuery = "SELECT building, section FROM DB2024_section";
+        String restaurantQuery = "SELECT rest_name, location, best_menu, category, breaktime, eat_alone, section_name, " +
+                "(SELECT order_count FROM DB2024_rest_order_count WHERE DB2024_rest_order_count.rest_name = DB2024_restaurant.rest_name) as order_count, " +
+                "(SELECT avg_rating FROM DB2024_rest_avg_rating WHERE DB2024_rest_avg_rating.rest_name = DB2024_restaurant.rest_name) as avg_rating " +
+                "FROM DB2024_restaurant WHERE section_name = ?";
+
+        try (Connection conn = DB2024Team13_connection.getConnection();
+             PreparedStatement buildingStmt = conn.prepareStatement(buildingQuery);
+             ResultSet buildingRs = buildingStmt.executeQuery()) {
+
+            // Load buildings and sections
+            while (buildingRs.next()) {
+                String building = buildingRs.getString("building");
+                String section = buildingRs.getString("section");
+                buildingDropdown.addItem(building);
+                buildingSectionMap.put(building, section);
+                buildingRestaurantMap.put(building, new ArrayList<>());
+            }
+
+            // Load restaurants for each section
+            try (PreparedStatement restaurantStmt = conn.prepareStatement(restaurantQuery)) {
+                for (String building : buildingSectionMap.keySet()) {
+                    String section = buildingSectionMap.get(building);
+                    restaurantStmt.setString(1, section);
+                    try (ResultSet restaurantRs = restaurantStmt.executeQuery()) {
+                        while (restaurantRs.next()) {
+                            String name = restaurantRs.getString("rest_name");
+                            String location = restaurantRs.getString("location");
+                            String bestMenu = restaurantRs.getString("best_menu");
+                            String category = restaurantRs.getString("category");
+                            boolean breakTime = restaurantRs.getBoolean("breaktime");
+                            boolean eatAlone = restaurantRs.getBoolean("eat_alone");
+                            int orderCount = restaurantRs.getInt("order_count");
+                            double avgRating = restaurantRs.getDouble("avg_rating");
+
+                            Restaurant restaurant = new Restaurant(name, location, bestMenu, category, breakTime, eatAlone, orderCount, avgRating);
+                            buildingRestaurantMap.get(building).add(restaurant);
+                        }
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return buildingRestaurantMap;
+    }
+
+    /**
+     * 모든 레스토랑을 가져오는 메소드
+     *
+     * @param buildingRestaurantMap 건물별 레스토랑 목록을 담은 맵
+     * @return 모든 레스토랑 리스트
+     */
+    private static List<Restaurant> getAllRestaurants(Map<String, List<Restaurant>> buildingRestaurantMap) {
+        Set<String> restaurantNames = new HashSet<>();
+        List<Restaurant> allRestaurants = new ArrayList<>();
+        for (List<Restaurant> restaurants : buildingRestaurantMap.values()) {
+            for (Restaurant restaurant : restaurants) {
+                if (restaurantNames.add(restaurant.getName())) {
+                    allRestaurants.add(restaurant);
+                }
+            }
+        }
+        return allRestaurants;
     }
 
     /**
@@ -214,14 +276,18 @@ public class DB2024Team13_customWindow {
         private String category;
         private boolean breakTime;
         private boolean eatAlone;
+        private int orderCount;
+        private double avgRating;
 
-        public Restaurant(String name, String location, String bestMenu, String category, boolean breakTime, boolean eatAlone) {
+        public Restaurant(String name, String location, String bestMenu, String category, boolean breakTime, boolean eatAlone, int orderCount, double avgRating) {
             this.name = name;
             this.location = location;
             this.bestMenu = bestMenu;
             this.category = category;
             this.breakTime = breakTime;
             this.eatAlone = eatAlone;
+            this.orderCount = orderCount;
+            this.avgRating = avgRating;
         }
 
         public String getName() {
@@ -246,6 +312,14 @@ public class DB2024Team13_customWindow {
 
         public boolean isEatAlone() {
             return eatAlone;
+        }
+
+        public int getOrderCount() {
+            return orderCount;
+        }
+
+        public double getAvgRating() {
+            return avgRating;
         }
     }
 }
