@@ -159,35 +159,29 @@ public class DB2024Team13_detailWindow {
 
         mainDetailPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // 리뷰 추가 또는 정보 수정 및 삭제 버튼 생성
-        JButton actionButton = new JButton(isAdmin ? "정보 수정" : "리뷰 추가");
+        // 리뷰 추가 또는 정보 수정 및 메뉴 수정 버튼 생성
+        JButton actionButton = new JButton(isAdmin ? "정보 관리" : "리뷰 추가");
         actionButton.setFont(new Font("나눔고딕", Font.BOLD, 15));
 
-        JButton deleteButton = new JButton("삭제");
-        deleteButton.setFont(new Font("나눔고딕", Font.BOLD, 15));
-
+        JButton menuEditButton = new JButton("메뉴 관리");
+        menuEditButton.setFont(new Font("나눔고딕", Font.BOLD, 15));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
         if (isAdmin) {
-            buttonPanel.add(deleteButton); // 삭제 버튼을 정보 수정 버튼 왼쪽에 추가
+            buttonPanel.add(menuEditButton); // 메뉴 수정 버튼을 정보 수정 버튼 왼쪽에 추가
         }
         buttonPanel.add(actionButton);
 
         mainDetailPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // 삭제 버튼 클릭 이벤트 추가
+        // 메뉴 수정 버튼 클릭 이벤트 추가
         if (isAdmin) {
-            deleteButton.addActionListener(new ActionListener() {
+            menuEditButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int confirm = JOptionPane.showConfirmDialog(null, "정말로 이 레스토랑을 삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
-                    if (confirm == JOptionPane.YES_OPTION) {
-                        DB2024Team13_utils.deleteRestaurant(restaurant);
-                        JOptionPane.showMessageDialog(null, "레스토랑이 삭제되었습니다.");
-                        // 상세 정보 패널을 초기화하거나 다른 화면으로 전환하는 로직 추가 가능
-                    }
+                    DB2024Team13_menuFixWindow.showMenuFixWindow(restaurant, mainDetailPanel);
                 }
             });
 
