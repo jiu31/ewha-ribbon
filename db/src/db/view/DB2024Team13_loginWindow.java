@@ -9,19 +9,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class DB2024Team13_loginWindow {
+    private static final int WINDOW_WIDTH = 900;
+    private static final int WINDOW_HEIGHT = 700;
+    
     public static void displayLoginWindow() {
-        // 로그인 프레임 생성
+        // Create login frame
         JFrame loginFrame = new JFrame("Login");
-        loginFrame.setSize(800, 600);
+        loginFrame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        loginFrame.setLocationRelativeTo(null); // 프레임을 화면 중앙에 위치
+        loginFrame.setLocationRelativeTo(null); // Center the frame
 
-        // 로그인 패널 생성
+        // Create login panel
         JPanel loginPanel = new JPanel(new GridBagLayout());
         loginFrame.add(loginPanel);
         placeComponents(loginPanel, loginFrame);
 
-        // 프레임을 보이도록 설정
+        // Make the frame visible
         loginFrame.setVisible(true);
     }
 
@@ -30,7 +33,7 @@ public class DB2024Team13_loginWindow {
         constraints.insets = new Insets(10, 10, 10, 10);
         constraints.fill = GridBagConstraints.HORIZONTAL;
 
-        // 제목 레이블 생성
+        // Create title label
         JLabel titleLabel = new JLabel("EwhaRibbon");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -40,7 +43,7 @@ public class DB2024Team13_loginWindow {
         constraints.anchor = GridBagConstraints.CENTER;
         loginPanel.add(titleLabel, constraints);
 
-        // 학번 레이블 생성
+        // Create student ID label
         JLabel studentIdLabel = new JLabel("학번:");
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -48,25 +51,25 @@ public class DB2024Team13_loginWindow {
         constraints.anchor = GridBagConstraints.WEST;
         loginPanel.add(studentIdLabel, constraints);
 
-        // 학번 입력 필드 생성
+        // Create student ID text field
         JTextField studentIdTextField = new JTextField(20);
         constraints.gridx = 1;
         constraints.gridy = 1;
         loginPanel.add(studentIdTextField, constraints);
 
-        // 비밀번호 레이블 생성
+        // Create password label
         JLabel passwordLabel = new JLabel("비밀번호:");
         constraints.gridx = 0;
         constraints.gridy = 2;
         loginPanel.add(passwordLabel, constraints);
 
-        // 비밀번호 입력 필드 생성
+        // Create password field
         JPasswordField passwordField = new JPasswordField(20);
         constraints.gridx = 1;
         constraints.gridy = 2;
         loginPanel.add(passwordField, constraints);
 
-        // 로그인 버튼 생성
+        // Create login button
         JButton loginBtn = new JButton("로그인");
         loginBtn.setBackground(new Color(0, 80, 0));
         loginBtn.setForeground(Color.WHITE);
@@ -79,7 +82,7 @@ public class DB2024Team13_loginWindow {
         constraints.anchor = GridBagConstraints.CENTER;
         loginPanel.add(loginBtn, constraints);
 
-        // 로그인 버튼 액션 리스너 추가
+        // Add action listener to login button
         loginBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -96,21 +99,21 @@ public class DB2024Team13_loginWindow {
         });
     }
 
-    // 메인 윈도우 표시 메소드
+    // Display main window method
     private static void showMainWindow(JFrame loginFrame) {
-        // 로그인 프레임의 모든 컴포넌트 제거
+        // Remove all components from the login frame
         loginFrame.getContentPane().removeAll();
         loginFrame.repaint();
         loginFrame.setTitle("EwhaRibbon");
 
-        // 메인 윈도우 컴포넌트 생성
+        // Create main window components
         DB2024Team13_mainWindow mainWindow = new DB2024Team13_mainWindow();
         loginFrame.setLayout(new BorderLayout());
         loginFrame.add(mainWindow.createTitleBar(), BorderLayout.NORTH);
         loginFrame.add(mainWindow.createSidebar(), BorderLayout.WEST);
         loginFrame.add(mainWindow.getMainPanel(), BorderLayout.CENTER);
 
-        // 프레임 새로고침
+        // Refresh the frame
         loginFrame.revalidate();
         loginFrame.repaint();
     }

@@ -1,13 +1,14 @@
 package db.view;
 
+import db.controller.DB2024Team13_connection;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class DB2024Team13_searchWindow {
     
@@ -27,17 +28,6 @@ public class DB2024Team13_searchWindow {
         DefaultListModel<String> restaurantListModel = new DefaultListModel<>();
         JList<String> restaurantJList = new JList<>(restaurantListModel);
         JScrollPane scrollPane = new JScrollPane(restaurantJList);
-
-        // 원본 데이터 리스트 생성
-        List<String> restaurantDataList = new ArrayList<>();
-        for (char c = 'K'; c <= 'T'; c++) {
-            restaurantDataList.add("Restaurant " + c);
-        }
-
-        // 원본 데이터를 리스트 모델에 추가
-        for (String restaurant : restaurantDataList) {
-            restaurantListModel.addElement(restaurant);
-        }
 
         mainPanel.add(searchBarPanel, BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -59,35 +49,43 @@ public class DB2024Team13_searchWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String searchText = searchTextField.getText().toLowerCase();
-                filterRestaurantList(searchText, restaurantListModel, restaurantDataList);
+                filterRestaurantList(searchText, restaurantListModel);
             }
         });
 
+        // 초기 데이터 로드
+        loadRestaurantList("", restaurantListModel);
+
         return mainPanel;
     }
-
-    // 리스트 필터링 메소드
-    private static void filterRestaurantList(String searchText, DefaultListModel<String> listModel, List<String> originalData) {
+    // 데이터베이스에서 레스토랑 리스트를 불러와 JList에 추가하는 메소드
+    private static void loadRestaurantList(String searchText, DefaultListModel<String> listModel) {
         listModel.clear();
-
-        // 검색어가 비어 있으면 원본 데이터 추가
-        if (searchText.isEmpty()) {
-            for (String restaurant : originalData) {
-                listModel.addElement(restaurant);
-            }
-        } else {
-            for (String restaurant : originalData) {
-                if (restaurant.toLowerCase().contains(searchText)) {
-                    listModel.addElement(restaurant);
+        String query = "SELECT rest_name FROM DB2024_restaurant WHERE rest_name LIKE ?";
+        
+        try (Connection conn = DB2024Team13_connection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setString(1, "%" + searchText + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String restaurantName = rs.getString("rest_name");
+                    listModel.addElement(restaurantName);
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
+    // 리스트 필터링 메소드
+    private static void filterRestaurantList(String searchText, DefaultListModel<String> listModel) {
+        loadRestaurantList(searchText, listModel);
+    }
+}
     // 데이터베이스 연결 관련 주석
     // 실제 데이터베이스와의 연결은 다음과 같이 구현할 수 있습니다:
     // 1. 데이터베이스 연결 설정
     // 2. 검색어에 따른 쿼리 실행
     // 3. 결과를 리스트 모델에 추가
     // 이 부분은 데이터베이스 라이브러리를 사용하여 구현해야 합니다.
-}

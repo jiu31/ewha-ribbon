@@ -12,15 +12,23 @@ public class DB2024Team13_connection {
 
     // 싱글톤 패턴으로 구현
     public static Connection getConnection() {
-        if (connection == null) {
+        if (connection == null || isClosed(connection)) {
             try {
                 connection = DriverManager.getConnection(DB_URL, USER, PASS);
-                System.out.println("데이터베이스 연결 성공!");
             } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
             }
         }
         return connection;
+    }
+
+    private static boolean isClosed(Connection conn) {
+        try {
+            return conn == null || conn.isClosed();
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            return true;
+        }
     }
 
     // 메인 메소드로 연결 테스트
