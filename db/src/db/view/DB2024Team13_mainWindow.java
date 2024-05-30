@@ -19,6 +19,7 @@ public class DB2024Team13_mainWindow {
 
     private final JPanel mainPanel = new JPanel(new BorderLayout());
     private final List<JButton> sidebarButtonList = new ArrayList<>();
+    private JButton mainButton;  // "메인" 버튼을 참조할 필드를 추가합니다.
 
     // Main window execution method
     public static void launchMainWindow() {
@@ -27,6 +28,12 @@ public class DB2024Team13_mainWindow {
             JFrame frame = app.createMainFrame();
             frame.setVisible(true);
         });
+    }
+
+    // Constructor
+    public DB2024Team13_mainWindow() {
+        // Set initial content to "메인" panel and highlight "메인" button
+        displayContent(DB2024Team13_customWindow.createSelectionPanel(this));
     }
 
     // Create main frame
@@ -64,7 +71,8 @@ public class DB2024Team13_mainWindow {
         sidebarPanel.setBackground(COLOR_DEFAULT_BUTTON);
         sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
 
-        addSidebarButton(sidebarPanel, "메인", e -> displayContent(DB2024Team13_customWindow.createSelectionPanel(this)));
+        // "메인" 버튼을 생성하고 mainButton 필드에 할당합니다.
+        mainButton = addSidebarButton(sidebarPanel, "메인", e -> displayContent(DB2024Team13_customWindow.createSelectionPanel(this)));
         addSidebarButton(sidebarPanel, "검색", e -> displayContent(DB2024Team13_searchWindow.createSearchPanel(this)));
         addSidebarButton(sidebarPanel, "내정보", e -> displayContent(DB2024Team13_myinfoWindow.createMyInfoPanel(this)));
         sidebarPanel.add(Box.createVerticalGlue());
@@ -72,11 +80,14 @@ public class DB2024Team13_mainWindow {
         // Add logout button
         addLogoutButton(sidebarPanel);
 
+        // 초기화 시 "메인" 버튼을 하이라이트
+        setSelectedButtonHighlight(mainButton);
+
         return sidebarPanel;
     }
 
     // Add sidebar button
-    private void addSidebarButton(JPanel sidebarPanel, String text, ActionListener actionListener) {
+    private JButton addSidebarButton(JPanel sidebarPanel, String text, ActionListener actionListener) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
@@ -88,6 +99,7 @@ public class DB2024Team13_mainWindow {
         });
         sidebarButtonList.add(button);
         sidebarPanel.add(button);
+        return button;  // 생성된 버튼을 반환합니다.
     }
 
     // Add logout button
