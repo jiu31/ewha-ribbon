@@ -14,67 +14,103 @@ import java.sql.SQLException;
 public class DB2024Team13_adminWindow {
 
     public static void showAdminWindow(String restaurant, JPanel mainDetailPanel) {
-        JFrame frame = new JFrame("관리자 - 레스토랑 정보 수정");
+        JFrame frame = new JFrame("관리자 - 레스토랑 정보 관리");
         frame.setSize(400, 600);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setLayout(new GridBagLayout());
         frame.add(panel, BorderLayout.CENTER);
 
-        JLabel titleLabel = new JLabel("레스토랑 정보 수정", SwingConstants.CENTER);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); // 컴포넌트 간격 설정
+        gbc.anchor = GridBagConstraints.WEST; // 기본적으로 왼쪽 정렬
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER; // 중앙 정렬
+        JLabel titleLabel = new JLabel("레스토랑 정보 관리", SwingConstants.CENTER);
         titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 20));
-        panel.add(titleLabel);
+        panel.add(titleLabel, gbc);
 
-        panel.add(Box.createVerticalStrut(20)); // 간격 추가
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.WEST; // 왼쪽 정렬로 되돌림
+        panel.add(Box.createVerticalStrut(10), gbc); // 간격 추가
 
+        gbc.gridy++;
         JLabel categoryLabel = new JLabel("카테고리:");
-        JTextField categoryField = new JTextField();
-        panel.add(categoryLabel);
-        panel.add(categoryField);
+        String[] categories = {"한식", "중식", "일식", "양식", "분식", "아시안", "패스트푸드", "카페"};
+        JComboBox<String> categoryComboBox = new JComboBox<>(categories);
+        panel.add(categoryLabel, gbc);
 
+        gbc.gridx++;
+        panel.add(categoryComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
         JLabel bestMenuLabel = new JLabel("대표메뉴:");
-        JTextField bestMenuField = new JTextField();
-        panel.add(bestMenuLabel);
-        panel.add(bestMenuField);
+        JTextField bestMenuField = new JTextField(20);
+        panel.add(bestMenuLabel, gbc);
 
-        JLabel sectionLabel = new JLabel("구역 이름:");
-        JTextField sectionField = new JTextField();
-        panel.add(sectionLabel);
-        panel.add(sectionField);
+        gbc.gridx++;
+        panel.add(bestMenuField, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy++;
         JLabel locationLabel = new JLabel("위치:");
-        JTextField locationField = new JTextField();
-        panel.add(locationLabel);
-        panel.add(locationField);
+        JTextField locationField = new JTextField(20);
+        panel.add(locationLabel, gbc);
+
+        gbc.gridx++;
+        panel.add(locationField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        JLabel sectionLabel = new JLabel("구역 이름:");
+        JComboBox<String> sectionComboBox = new JComboBox<>(new String[]{"정문", "후문", "공대쪽문", "북아현"});
+        panel.add(sectionLabel, gbc);
+
+        gbc.gridx++;
+        panel.add(sectionComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        //panel.add(Box.createVerticalStrut(10), gbc); // 간격 추가
+
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        JPanel checkBoxPanel = new JPanel();
+        checkBoxPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         JLabel breaktimeLabel = new JLabel("브레이크타임 유무:");
         JCheckBox breaktimeCheckBox = new JCheckBox();
-        panel.add(breaktimeLabel);
-        panel.add(breaktimeCheckBox);
+        checkBoxPanel.add(breaktimeLabel);
+        checkBoxPanel.add(breaktimeCheckBox);
 
         JLabel eatAloneLabel = new JLabel("혼밥 가능 여부:");
         JCheckBox eatAloneCheckBox = new JCheckBox();
-        panel.add(eatAloneLabel);
-        panel.add(eatAloneCheckBox);
+        checkBoxPanel.add(eatAloneLabel);
+        checkBoxPanel.add(eatAloneCheckBox);
 
-        loadRestaurantDetails(restaurant, categoryField, bestMenuField, sectionField, locationField, breaktimeCheckBox, eatAloneCheckBox);
+        panel.add(checkBoxPanel, gbc);
 
-        JButton saveButton = new JButton("저장");
-        panel.add(saveButton);
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        panel.add(Box.createVerticalStrut(10), gbc); // 간격 추가
 
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateRestaurantDetails(restaurant, categoryField.getText(), bestMenuField.getText(), sectionField.getText(), locationField.getText(), breaktimeCheckBox.isSelected(), eatAloneCheckBox.isSelected());
-                DB2024Team13_detailWindow.refreshDetailPanel(mainDetailPanel, restaurant);
-                frame.dispose();
-            }
-        });
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.EAST; // 버튼은 오른쪽 정렬
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton deleteButton = new JButton("가게삭제");
+        JButton saveButton = new JButton("변경저장");
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(saveButton);
 
-        JButton deleteButton = new JButton("삭제");
-        panel.add(deleteButton);
+        panel.add(buttonPanel, gbc);
 
         deleteButton.addActionListener(new ActionListener() {
             @Override
@@ -83,15 +119,29 @@ public class DB2024Team13_adminWindow {
                 if (confirm == JOptionPane.YES_OPTION) {
                     deleteRestaurant(restaurant);
                     JOptionPane.showMessageDialog(null, "레스토랑이 삭제되었습니다.");
+                    // 상세 정보 패널을 초기화하거나 다른 화면으로 전환하는 로직 추가 가능
                     frame.dispose();
                 }
             }
         });
 
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateRestaurantDetails(restaurant, (String) categoryComboBox.getSelectedItem(), bestMenuField.getText(), (String) sectionComboBox.getSelectedItem(), locationField.getText(), breaktimeCheckBox.isSelected(), eatAloneCheckBox.isSelected());
+                DB2024Team13_detailWindow.refreshDetailPanel(mainDetailPanel, restaurant);
+                frame.dispose();
+            }
+        });
+
+        frame.setLocationRelativeTo(null); // 창을 화면 중앙에 위치
         frame.setVisible(true);
+
+        // 레스토랑 세부 정보 불러오기
+        loadRestaurantDetails(restaurant, categoryComboBox, bestMenuField, sectionComboBox, locationField, breaktimeCheckBox, eatAloneCheckBox);
     }
 
-    private static void loadRestaurantDetails(String restaurantName, JTextField categoryField, JTextField bestMenuField, JTextField sectionField, JTextField locationField, JCheckBox breaktimeCheckBox, JCheckBox eatAloneCheckBox) {
+    private static void loadRestaurantDetails(String restaurantName, JComboBox<String> categoryComboBox, JTextField bestMenuField, JComboBox<String> sectionComboBox, JTextField locationField, JCheckBox breaktimeCheckBox, JCheckBox eatAloneCheckBox) {
         String detailsQuery = "SELECT best_menu, location, breaktime, eat_alone, category, section_name " +
                        "FROM DB2024_restaurant " +
                        "WHERE rest_name = ?";
@@ -106,8 +156,8 @@ public class DB2024Team13_adminWindow {
                     locationField.setText(rs.getString("location"));
                     breaktimeCheckBox.setSelected(rs.getBoolean("breaktime"));
                     eatAloneCheckBox.setSelected(rs.getBoolean("eat_alone"));
-                    categoryField.setText(rs.getString("category"));
-                    sectionField.setText(rs.getString("section_name"));
+                    categoryComboBox.setSelectedItem(rs.getString("category"));
+                    sectionComboBox.setSelectedItem(rs.getString("section_name"));
                 }
             }
         } catch (SQLException e) {
