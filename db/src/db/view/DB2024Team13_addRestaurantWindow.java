@@ -20,28 +20,12 @@ public class DB2024Team13_addRestaurantWindow {
         gbc.insets = new Insets(5, 5, 5, 5);
 
         JTextField nameField = new JTextField(15);
-        JComboBox<String> locationComboBox = new JComboBox<>(getBuildings());
+        JTextField locationField = new JTextField(15);
         JTextField menuField = new JTextField(15);
         JComboBox<String> categoryComboBox = new JComboBox<>(getCategories());
         JCheckBox breakTimeCheckBox = new JCheckBox();
-        JLabel sectionLabel = new JLabel();
+        JComboBox<String> sectionComboBox = new JComboBox<>(getSections());
         JCheckBox eatAloneCheckBox = new JCheckBox();
-
-        // locationComboBox 선택에 따라 sectionLabel 업데이트
-        locationComboBox.addActionListener(e -> {
-            String selectedBuilding = (String) locationComboBox.getSelectedItem();
-            if (selectedBuilding != null) {
-                String sectionName = getSectionName(selectedBuilding);
-                sectionLabel.setText(sectionName);
-            }
-        });
-
-        // 초기 선택된 위치에 따라 섹션 이름 설정
-        if (locationComboBox.getSelectedItem() != null) {
-            String initialBuilding = (String) locationComboBox.getSelectedItem();
-            String sectionName = getSectionName(initialBuilding);
-            sectionLabel.setText(sectionName);
-        }
 
         gbc.anchor = GridBagConstraints.EAST;
         gbc.gridx = 0;
@@ -65,7 +49,7 @@ public class DB2024Team13_addRestaurantWindow {
         gbc.gridy = 0;
         dialog.add(nameField, gbc);
         gbc.gridy++;
-        dialog.add(locationComboBox, gbc);
+        dialog.add(locationField, gbc);
         gbc.gridy++;
         dialog.add(menuField, gbc);
         gbc.gridy++;
@@ -73,7 +57,7 @@ public class DB2024Team13_addRestaurantWindow {
         gbc.gridy++;
         dialog.add(breakTimeCheckBox, gbc);
         gbc.gridy++;
-        dialog.add(sectionLabel, gbc);
+        dialog.add(sectionComboBox, gbc);
         gbc.gridy++;
         dialog.add(eatAloneCheckBox, gbc);
 
@@ -88,21 +72,21 @@ public class DB2024Team13_addRestaurantWindow {
         submitButton.addActionListener(e -> {
             // 모든 필드가 입력되었는지 확인
             if (nameField.getText().isEmpty() || 
-                locationComboBox.getSelectedItem() == null || 
+                locationField.getText().isEmpty() || 
                 menuField.getText().isEmpty() || 
                 categoryComboBox.getSelectedItem() == null || 
-                sectionLabel.getText().isEmpty()) {
+                sectionComboBox.getSelectedItem() == null) {
                 JOptionPane.showMessageDialog(dialog, "모든 필드를 입력해주세요.", "입력 오류", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             success[0] = addRestaurantWithTransaction(
                 nameField.getText(),
-                (String) locationComboBox.getSelectedItem(),
+                locationField.getText(),
                 menuField.getText(),
                 (String) categoryComboBox.getSelectedItem(),
                 breakTimeCheckBox.isSelected(),
-                sectionLabel.getText(),
+                (String) sectionComboBox.getSelectedItem(),
                 eatAloneCheckBox.isSelected()
             );
             if (success[0]) {
@@ -132,37 +116,19 @@ public class DB2024Team13_addRestaurantWindow {
         return categories.toArray(new String[0]);
     }
 
-    private static String[] getBuildings() {
-        List<String> buildings = new ArrayList<>();
-        String sql = "SELECT DISTINCT building FROM DB2024_section";
+    private static String[] getSections() {
+        List<String> sections = new ArrayList<>();
+        String sql = "SELECT DISTINCT section FROM DB2024_section";
         try (Connection conn = DB2024Team13_connection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                buildings.add(rs.getString("building"));
+                sections.add(rs.getString("section"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return buildings.toArray(new String[0]);
-    }
-
-    private static String getSectionName(String building) {
-        String sql = "SELECT section FROM DB2024_section WHERE building = ?";
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, building);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("section");
-                } else {
-                    return "섹션을 찾을 수 없습니다.";
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return "오류 발생";
-        }
+        return sections.toArray(new String[0]);
     }
 
     private static boolean addRestaurantWithTransaction(String name, String location, String bestMenu, String category, boolean breakTime, String sectionName, boolean eatAlone) {
