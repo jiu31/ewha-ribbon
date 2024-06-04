@@ -1,9 +1,8 @@
 package db.view;
 
+import db.controller.DB2024Team13_connection;
+
 import javax.swing.*;
-
-import db.model.DB2024Team13_connection;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -187,41 +186,27 @@ public class DB2024Team13_adminWindow {
     }
 
     private static void deleteRestaurant(String restaurantName) {
-        String deleteOrderQuery = "DELETE FROM DB2024_order WHERE rest_name = ?";
-        String deleteReviewQuery = "DELETE FROM DB2024_review WHERE rest_name = ?";
-        String deleteBookmarkQuery = "DELETE FROM DB2024_bookmark WHERE rest_name = ?";
-        String deleteMenuQuery = "DELETE FROM DB2024_menu WHERE rest_name = ?";
-        String deleteRestaurantQuery = "DELETE FROM DB2024_restaurant WHERE rest_name = ?";
+        String[] deleteQueries = {
+            "DELETE FROM DB2024_order WHERE rest_name = ?",
+            "DELETE FROM DB2024_review WHERE rest_name = ?",
+            "DELETE FROM DB2024_bookmark WHERE rest_name = ?",
+            "DELETE FROM DB2024_menu WHERE rest_name = ?",
+            "DELETE FROM DB2024_restaurant WHERE rest_name = ?"
+        };
 
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement deleteOrderStmt = conn.prepareStatement(deleteOrderQuery);
-             PreparedStatement deleteReviewStmt = conn.prepareStatement(deleteReviewQuery);
-             PreparedStatement deleteBookmarkStmt = conn.prepareStatement(deleteBookmarkQuery);
-             PreparedStatement deleteMenuStmt = conn.prepareStatement(deleteMenuQuery);
-             PreparedStatement deleteRestaurantStmt = conn.prepareStatement(deleteRestaurantQuery)) {
-
-            // 주문 삭제
-            deleteOrderStmt.setString(1, restaurantName);
-            deleteOrderStmt.executeUpdate();
-
-            // 리뷰 삭제
-            deleteReviewStmt.setString(1, restaurantName);
-            deleteReviewStmt.executeUpdate();
-
-            // 북마크 삭제
-            deleteBookmarkStmt.setString(1, restaurantName);
-            deleteBookmarkStmt.executeUpdate();
-
-            // 메뉴 삭제
-            deleteMenuStmt.setString(1, restaurantName);
-            deleteMenuStmt.executeUpdate();
-
-            // 레스토랑 삭제
-            deleteRestaurantStmt.setString(1, restaurantName);
-            deleteRestaurantStmt.executeUpdate();
-
+        try (Connection conn = DB2024Team13_connection.getConnection()) {
+            for (String query : deleteQueries) {
+                executeUpdate(conn, query, restaurantName);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void executeUpdate(Connection conn, String query, String param) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, param);
+            stmt.executeUpdate();
         }
     }
 }
