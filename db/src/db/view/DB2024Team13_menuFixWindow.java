@@ -1,13 +1,9 @@
 package db.view;
 
-import db.model.DB2024Team13_connection;
+import db.model.DB2024Team13_menuManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -64,14 +60,11 @@ public class DB2024Team13_menuFixWindow {
         gbc.anchor = GridBagConstraints.WEST;
         
         //메뉴 이름, 가격, 비건 여부 필드 및 체크박스 추가
-        addLabeledField(addMenuPanel, "메뉴 이름", new JTextField(10), gbc, 1);
-        JTextField menuNameField = (JTextField) addMenuPanel.getComponent(3);
+        JTextField menuNameField = addLabeledField(addMenuPanel, "메뉴 이름", new JTextField(10), gbc, 1);
 
-        addLabeledField(addMenuPanel, "가격", new JTextField(10), gbc, 2);
-        JTextField menuPriceField = (JTextField) addMenuPanel.getComponent(5);
+        JTextField menuPriceField = addLabeledField(addMenuPanel, "가격", new JTextField(10), gbc, 2);
 
-        addLabeledField(addMenuPanel, "비건 여부", new JCheckBox(), gbc, 3);
-        JCheckBox menuVeganCheckBox = (JCheckBox) addMenuPanel.getComponent(7);
+        JCheckBox menuVeganCheckBox = addLabeledField(addMenuPanel, "비건 여부", new JCheckBox(), gbc, 3);
         
         //메뉴 추가 버튼 추가
         gbc.gridx = 1;
@@ -90,7 +83,7 @@ public class DB2024Team13_menuFixWindow {
             try {
                 int menuPrice = Integer.parseInt(menuPriceField.getText());
                 boolean isVegan = menuVeganCheckBox.isSelected();
-                addMenuItem(restaurant, menuName, menuPrice, isVegan);
+                DB2024Team13_menuManager.addMenuItem(restaurant, menuName, menuPrice, isVegan);
                 JOptionPane.showMessageDialog(addMenuPanel, "메뉴가 추가되었습니다.");
                 loadMenuItems(restaurant, menuPanel, mainDetailPanel);
                 DB2024Team13_detailWindow.refreshDetailPanel(mainDetailPanel, restaurant);
@@ -103,13 +96,15 @@ public class DB2024Team13_menuFixWindow {
     }
     
     //필요 시 라벨 및 필드를 추가할 수 있음
-    private static void addLabeledField(JPanel panel, String labelText, JComponent field, GridBagConstraints gbc, int y) {
+    private static <T extends JComponent> T addLabeledField(JPanel panel, String labelText, T field, GridBagConstraints gbc, int y) {
         gbc.gridx = 0;
         gbc.gridy = y;
         panel.add(new JLabel(labelText), gbc);
 
         gbc.gridx = 1;
         panel.add(field, gbc);
+        
+        return field;
     }
     
     //기본 메뉴를 불러와 패널에 추가함
@@ -121,21 +116,14 @@ public class DB2024Team13_menuFixWindow {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        String menuQuery = "SELECT menu_name, price, vegan FROM DB2024_menu WHERE rest_name = ?";
-
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(menuQuery)) {
-
-            stmt.setString(1, restaurantName);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    String menuName = rs.getString("menu_name");
-                    int price = rs.getInt("price");
-                    boolean isVegan = rs.getBoolean("vegan");
-                    JPanel menuItemPanel = createMenuItemPanel(restaurantName, menuName, price, isVegan, menuPanel, mainDetailPanel);
-                    gbc.gridy++;
-                    menuPanel.add(menuItemPanel, gbc);
-                }
+        try (ResultSet rs = DB2024Team13_menuManager.loadMenuItems(restaurantName)) {
+            while (rs.next()) {
+                String menuName = rs.getString("menu_name");
+                int price = rs.getInt("price");
+                boolean isVegan = rs.getBoolean("vegan");
+                JPanel menuItemPanel = createMenuItemPanel(restaurantName, menuName, price, isVegan, menuPanel, mainDetailPanel);
+                gbc.gridy++;
+                menuPanel.add(menuItemPanel, gbc);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -177,7 +165,7 @@ public class DB2024Team13_menuFixWindow {
             try {
                 int newPrice = Integer.parseInt(priceField.getText());
                 boolean newIsVegan = veganCheckBox.isSelected();
-                updateMenuItem(restaurantName, menuName, newPrice, newIsVegan);
+                DB2024Team13_menuManager.updateMenuItem(restaurantName, menuName, newPrice, newIsVegan);
                 JOptionPane.showMessageDialog(menuPanel, "메뉴가 수정되었습니다.");
                 loadMenuItems(restaurantName, menuPanel, mainDetailPanel);
                 DB2024Team13_detailWindow.refreshDetailPanel(mainDetailPanel, restaurantName);
@@ -189,7 +177,7 @@ public class DB2024Team13_menuFixWindow {
         //삭제 버튼 클릭 시 이벤트
         deleteButton.addActionListener(e -> {
             try {
-                deleteMenuItem(restaurantName, menuName);
+            	DB2024Team13_menuManager.deleteMenuItem(restaurantName, menuName);
                 JOptionPane.showMessageDialog(menuPanel, "메뉴가 삭제되었습니다.");
                 loadMenuItems(restaurantName, menuPanel, mainDetailPanel);
                 DB2024Team13_detailWindow.refreshDetailPanel(mainDetailPanel, restaurantName);
@@ -200,58 +188,5 @@ public class DB2024Team13_menuFixWindow {
         });
 
         return menuItemPanel;
-    }
-    
-    //새로운 메뉴를 데이터베이스에 추가
-    private static void addMenuItem(String restaurantName, String menuName, int price, boolean isVegan) {
-        String insertMenuQuery = "INSERT INTO DB2024_menu (rest_name, menu_name, price, vegan) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(insertMenuQuery)) {
-
-            stmt.setString(1, restaurantName);
-            stmt.setString(2, menuName);
-            stmt.setInt(3, price);
-            stmt.setBoolean(4, isVegan);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    //기존 메뉴 항목을 수정
-    private static void updateMenuItem(String restaurantName, String menuName, int price, boolean isVegan) {
-        String updateMenuQuery = "UPDATE DB2024_menu SET price = ?, vegan = ? WHERE rest_name = ? AND menu_name = ?";
-
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(updateMenuQuery)) {
-
-            stmt.setInt(1, price);
-            stmt.setBoolean(2, isVegan);
-            stmt.setString(3, restaurantName);
-            stmt.setString(4, menuName);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    //기존 메뉴 항목을 삭제
-    private static void deleteMenuItem(String restaurantName, String menuName) throws SQLException {
-        String deleteOrderQuery = "DELETE FROM DB2024_order WHERE rest_name = ? AND menu_name = ?";
-        String deleteMenuQuery = "DELETE FROM DB2024_menu WHERE rest_name = ? AND menu_name = ?";
-
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement deleteOrderStmt = conn.prepareStatement(deleteOrderQuery);
-             PreparedStatement deleteMenuStmt = conn.prepareStatement(deleteMenuQuery)) {
-        	
-            deleteOrderStmt.setString(1, restaurantName);
-            deleteOrderStmt.setString(2, menuName);
-            deleteOrderStmt.executeUpdate();
-
-            deleteMenuStmt.setString(1, restaurantName);
-            deleteMenuStmt.setString(2, menuName);
-            deleteMenuStmt.executeUpdate();
-        }
     }
 }

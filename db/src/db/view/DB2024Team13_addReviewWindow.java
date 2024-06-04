@@ -1,7 +1,7 @@
 package db.view;
 
-import db.model.DB2024Team13_query;
-import db.model.DB2024Team13_userSession;
+import db.model.DB2024Team13_reviewManager;
+import db.model.DB2024Team13_userSessionManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,8 +59,8 @@ public class DB2024Team13_addReviewWindow {
                     return;
                 }
 
-                String studentId = DB2024Team13_userSession.getInstance().getStudentId();
-                if (DB2024Team13_query.addReview(restaurantName, studentId, star)) {
+                String studentId = DB2024Team13_userSessionManager.getInstance().getStudentId();
+                if (DB2024Team13_reviewManager.addReview(restaurantName, studentId, star)) {
                     JOptionPane.showMessageDialog(reviewDialog, "리뷰 추가 성공");
                     DB2024Team13_detailWindow.refreshDetailPanel(mainDetailPanel, restaurantName);
                     reviewDialog.dispose();

@@ -1,17 +1,16 @@
 package db.view;
 
-import db.controller.DB2024Team13_userSession;
-import db.controller.DB2024Team13_connection;
-import db.view.DB2024Team13_utils;
+import db.model.DB2024Team13_restaurantManager;
+import db.model.DB2024Team13_bookmarkManager;
+import db.model.DB2024Team13_userSessionManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class DB2024Team13_detailWindow {
 
@@ -21,8 +20,8 @@ public class DB2024Team13_detailWindow {
     private static final Color COLOR_NOT_BOOKMARKED_TEXT = Color.BLACK; // 북마크되지 않은 상태의 텍스트 색상
 
     public static JPanel createDetailPanel(String restaurant) {
-        boolean isAdmin = DB2024Team13_userSession.getInstance().isAdmin();
-        String studentId = DB2024Team13_userSession.getInstance().getStudentId();
+        boolean isAdmin = DB2024Team13_userSessionManager.getInstance().isAdmin();
+        String studentId = DB2024Team13_userSessionManager.getInstance().getStudentId();
 
         JPanel mainDetailPanel = new JPanel(new BorderLayout());
         mainDetailPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -48,7 +47,7 @@ public class DB2024Team13_detailWindow {
         addDetailLabel(detailsContentPanel, "카테고리: ", "categoryLabel");
         addDetailLabel(detailsContentPanel, "대표메뉴: ", "bestMenuLabel");
         addDetailLabel(detailsContentPanel, "전체메뉴 ", "menuLabel");
-        
+
         JPanel menuInfoPanel = new JPanel();
         menuInfoPanel.setLayout(new BoxLayout(menuInfoPanel, BoxLayout.Y_AXIS));
         menuInfoPanel.setName("menuInfoPanel");
@@ -86,7 +85,15 @@ public class DB2024Team13_detailWindow {
 
         addAdminActionListeners(isAdmin, restaurant, mainDetailPanel, menuEditButton, actionButton);
 
-        loadRestaurantDetails(restaurant, mainDetailPanel);
+        Map<String, Object> details = DB2024Team13_restaurantManager.loadRestaurantDetails(restaurant);
+        updateDetailLables(details, mainDetailPanel);
+
+        try {
+            ResultSet menuRs = DB2024Team13_restaurantManager.getMenuItems(restaurant);
+            updateMenuLabels(menuRs, mainDetailPanel);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         return mainDetailPanel;
     }
@@ -99,7 +106,7 @@ public class DB2024Team13_detailWindow {
         bookmarkButton.setOpaque(true);
         bookmarkButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        boolean isBookmarked = isRestaurantBookmarked(studentId, restaurant);
+        boolean isBookmarked = DB2024Team13_bookmarkManager.isRestaurantBookmarked(studentId, restaurant);
 
         if (isBookmarked) {
             bookmarkButton.setBackground(COLOR_BOOKMARKED);
@@ -115,11 +122,11 @@ public class DB2024Team13_detailWindow {
                 if (bookmarked) {
                     bookmarkButton.setBackground(COLOR_BOOKMARKED);
                     bookmarkButton.setForeground(COLOR_BOOKMARKED_TEXT);
-                    addBookmark(studentId, restaurant);
+                    DB2024Team13_bookmarkManager.addBookmark(studentId, restaurant);
                 } else {
                     bookmarkButton.setBackground(COLOR_NOT_BOOKMARKED);
                     bookmarkButton.setForeground(COLOR_NOT_BOOKMARKED_TEXT);
-                    removeBookmark(studentId, restaurant);
+                    DB2024Team13_bookmarkManager.removeBookmark(studentId, restaurant);
                 }
             }
         });
@@ -173,44 +180,15 @@ public class DB2024Team13_detailWindow {
         }
     }
 
-    private static void loadRestaurantDetails(String restaurantName, JPanel mainDetailPanel) {
-        String detailsQuery = "SELECT r.best_menu, r.location, r.breaktime, r.eat_alone, r.category, r.section_name, AVG(rv.star) AS avg_rating " +
-                              "FROM DB2024_restaurant r " +
-                              "LEFT JOIN DB2024_review rv ON r.rest_name = rv.rest_name " +
-                              "WHERE r.rest_name = ? " +
-                              "GROUP BY r.rest_name, r.best_menu, r.location, r.breaktime, r.eat_alone, r.category, r.section_name";
-        
-        String menuQuery = "SELECT menu_name, price, vegan " +
-                           "FROM DB2024_menu " +
-                           "WHERE rest_name = ?";
-
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement detailsStmt = conn.prepareStatement(detailsQuery);
-             PreparedStatement menuStmt = conn.prepareStatement(menuQuery)) {
-            
-            detailsStmt.setString(1, restaurantName);
-            ResultSet rs = detailsStmt.executeQuery();
-            updateDetailLabels(rs, mainDetailPanel);
-
-            menuStmt.setString(1, restaurantName);
-            ResultSet menuRs = menuStmt.executeQuery();
-            updateMenuLabels(menuRs, mainDetailPanel);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void updateDetailLabels(ResultSet rs, JPanel mainDetailPanel) throws SQLException {
-        if (rs.next()) {
-            setLabelText(mainDetailPanel, "bestMenuLabel", "대표메뉴: " + rs.getString("best_menu"));
-            setLabelText(mainDetailPanel, "locationLabel", "위치: " + rs.getString("location"));
-            setLabelText(mainDetailPanel, "eatAloneLabel", "혼밥 가능 여부: " + (rs.getBoolean("eat_alone") ? "O" : "X"));
-            setLabelText(mainDetailPanel, "breaktimeLabel", "브레이크타임 유무: " + (rs.getBoolean("breaktime") ? "O" : "X"));
-            setLabelText(mainDetailPanel, "avgRatingLabel", "별점: " + String.format("%.2f", rs.getDouble("avg_rating")));
-            setLabelText(mainDetailPanel, "categoryLabel", "카테고리: " + rs.getString("category"));
-            setLabelText(mainDetailPanel, "sectionLabel", "구역 이름: " + rs.getString("section_name"));
-        }
+    private static void updateDetailLables(Map<String, Object> details, JPanel mainDetailPanel) {
+        setLabelText(mainDetailPanel, "avgRatingLabel", "별점: " + String.format("%.2f", (Double) details.getOrDefault("avgRating", 0.0)));
+        setLabelText(mainDetailPanel, "categoryLabel", "카테고리: " + details.getOrDefault("category", "N/A"));
+        setLabelText(mainDetailPanel, "bestMenuLabel", "대표메뉴: " + details.getOrDefault("bestMenu", "N/A"));
+        setLabelText(mainDetailPanel, "sectionLabel", "구역 이름: " + details.getOrDefault("section", "N/A"));
+        setLabelText(mainDetailPanel, "locationLabel", "위치: " + details.getOrDefault("location", "N/A"));
+        setLabelText(mainDetailPanel, "veganLabel", "비건메뉴 여부: " + ((boolean) details.getOrDefault("vegan", false) ? "O" : "X"));
+        setLabelText(mainDetailPanel, "eatAloneLabel", "혼밥 가능 여부: " + ((boolean) details.getOrDefault("eatAlone", false) ? "O" : "X"));
+        setLabelText(mainDetailPanel, "breaktimeLabel", "브레이크타임 유무: " + ((boolean) details.getOrDefault("breaktime", false) ? "O" : "X"));
     }
 
     private static void updateMenuLabels(ResultSet rs, JPanel mainDetailPanel) throws SQLException {
@@ -262,50 +240,17 @@ public class DB2024Team13_detailWindow {
         return null;
     }
 
-    private static boolean isRestaurantBookmarked(String studentId, String restaurantName) {
-        String query = "SELECT COUNT(*) FROM DB2024_bookmark WHERE student_id = ? AND rest_name = ?";
-        return executeCountQuery(query, studentId, restaurantName);
-    }
-
-    private static boolean executeCountQuery(String query, String param1, String param2) {
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, param1);
-            stmt.setString(2, param2);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private static void addBookmark(String studentId, String restaurantName) {
-        String query = "INSERT INTO DB2024_bookmark (student_id, rest_name) VALUES (?, ?)";
-        executeUpdate(query, studentId, restaurantName);
-    }
-
-    private static void removeBookmark(String studentId, String restaurantName) {
-        String query = "DELETE FROM DB2024_bookmark WHERE student_id = ? AND rest_name = ?";
-        executeUpdate(query, studentId, restaurantName);
-    }
-
-    private static void executeUpdate(String query, String param1, String param2) {
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, param1);
-            stmt.setString(2, param2);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void refreshDetailPanel(JPanel mainDetailPanel, String restaurant) {
-        loadRestaurantDetails(restaurant, mainDetailPanel);
+        Map<String, Object> details = DB2024Team13_restaurantManager.loadRestaurantDetails(restaurant);
+        updateDetailLables(details, mainDetailPanel);
+
+        try {
+            ResultSet menuRs = DB2024Team13_restaurantManager.getMenuItems(restaurant);
+            updateMenuLabels(menuRs, mainDetailPanel);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         mainDetailPanel.revalidate();
         mainDetailPanel.repaint();
     }

@@ -1,15 +1,12 @@
 package db.view;
 
-import db.controller.DB2024Team13_connection;
+import db.model.DB2024Team13_restaurantManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Map;
 
 public class DB2024Team13_adminWindow {
 
@@ -117,7 +114,7 @@ public class DB2024Team13_adminWindow {
             public void actionPerformed(ActionEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(null, "정말로 이 레스토랑을 삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    deleteRestaurant(restaurant);
+                	DB2024Team13_restaurantManager.deleteRestaurant(restaurant);
                     JOptionPane.showMessageDialog(null, "레스토랑이 삭제되었습니다.");
                     // 상세 정보 패널을 초기화하거나 다른 화면으로 전환하는 로직 추가 가능
                     frame.dispose();
@@ -128,7 +125,7 @@ public class DB2024Team13_adminWindow {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateRestaurantDetails(restaurant, (String) categoryComboBox.getSelectedItem(), bestMenuField.getText(), (String) sectionComboBox.getSelectedItem(), locationField.getText(), breaktimeCheckBox.isSelected(), eatAloneCheckBox.isSelected());
+            	DB2024Team13_restaurantManager.updateRestaurantDetails(restaurant, (String) categoryComboBox.getSelectedItem(), bestMenuField.getText(), (String) sectionComboBox.getSelectedItem(), locationField.getText(), breaktimeCheckBox.isSelected(), eatAloneCheckBox.isSelected());
                 DB2024Team13_detailWindow.refreshDetailPanel(mainDetailPanel, restaurant);
                 frame.dispose();
             }
@@ -138,75 +135,12 @@ public class DB2024Team13_adminWindow {
         frame.setVisible(true);
 
         // 레스토랑 세부 정보 불러오기
-        loadRestaurantDetails(restaurant, categoryComboBox, bestMenuField, sectionComboBox, locationField, breaktimeCheckBox, eatAloneCheckBox);
-    }
-
-    private static void loadRestaurantDetails(String restaurantName, JComboBox<String> categoryComboBox, JTextField bestMenuField, JComboBox<String> sectionComboBox, JTextField locationField, JCheckBox breaktimeCheckBox, JCheckBox eatAloneCheckBox) {
-        String detailsQuery = "SELECT best_menu, location, breaktime, eat_alone, category, section_name " +
-                       "FROM DB2024_restaurant " +
-                       "WHERE rest_name = ?";
-
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement detailsStmt = conn.prepareStatement(detailsQuery)) {
-            
-            detailsStmt.setString(1, restaurantName);
-            try (ResultSet rs = detailsStmt.executeQuery()) {
-                if (rs.next()) {
-                    bestMenuField.setText(rs.getString("best_menu"));
-                    locationField.setText(rs.getString("location"));
-                    breaktimeCheckBox.setSelected(rs.getBoolean("breaktime"));
-                    eatAloneCheckBox.setSelected(rs.getBoolean("eat_alone"));
-                    categoryComboBox.setSelectedItem(rs.getString("category"));
-                    sectionComboBox.setSelectedItem(rs.getString("section_name"));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void updateRestaurantDetails(String restaurantName, String category, String bestMenu, String section, String location, boolean breaktime, boolean eatAlone) {
-        String updateQuery = "UPDATE DB2024_restaurant SET category = ?, best_menu = ?, section_name = ?, location = ?, breaktime = ?, eat_alone = ? WHERE rest_name = ?";
-
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
-            
-            stmt.setString(1, category);
-            stmt.setString(2, bestMenu);
-            stmt.setString(3, section);
-            stmt.setString(4, location);
-            stmt.setBoolean(5, breaktime);
-            stmt.setBoolean(6, eatAlone);
-            stmt.setString(7, restaurantName);
-            
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void deleteRestaurant(String restaurantName) {
-        String[] deleteQueries = {
-            "DELETE FROM DB2024_order WHERE rest_name = ?",
-            "DELETE FROM DB2024_review WHERE rest_name = ?",
-            "DELETE FROM DB2024_bookmark WHERE rest_name = ?",
-            "DELETE FROM DB2024_menu WHERE rest_name = ?",
-            "DELETE FROM DB2024_restaurant WHERE rest_name = ?"
-        };
-
-        try (Connection conn = DB2024Team13_connection.getConnection()) {
-            for (String query : deleteQueries) {
-                executeUpdate(conn, query, restaurantName);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void executeUpdate(Connection conn, String query, String param) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, param);
-            stmt.executeUpdate();
-        }
+        Map<String, Object> details = DB2024Team13_restaurantManager.loadRestaurantDetails(restaurant);
+        categoryComboBox.setSelectedItem(details.getOrDefault("category", ""));
+        bestMenuField.setText((String) details.getOrDefault("bestMenu", ""));
+        locationField.setText((String) details.getOrDefault("location", ""));
+        sectionComboBox.setSelectedItem(details.getOrDefault("section", ""));
+        breaktimeCheckBox.setSelected((Boolean) details.getOrDefault("breaktime", false));
+        eatAloneCheckBox.setSelected((Boolean) details.getOrDefault("eatAlone", false));
     }
 }

@@ -1,12 +1,10 @@
 package db.view;
 
-import db.model.DB2024Team13_connection;
+import db.model.DB2024Team13_transactionManager;
+import db.model.DB2024Team13_restaurantManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DB2024Team13_addRestaurantWindow {
 	
@@ -22,9 +20,9 @@ public class DB2024Team13_addRestaurantWindow {
         JTextField nameField = new JTextField(15);
         JTextField locationField = new JTextField(15);
         JTextField menuField = new JTextField(15);
-        JComboBox<String> categoryComboBox = new JComboBox<>(getCategories());
+        JComboBox<String> categoryComboBox = new JComboBox<>(DB2024Team13_restaurantManager.getCategories());
         JCheckBox breakTimeCheckBox = new JCheckBox();
-        JComboBox<String> sectionComboBox = new JComboBox<>(getSections());
+        JComboBox<String> sectionComboBox = new JComboBox<>(DB2024Team13_restaurantManager.getSections());
         JCheckBox eatAloneCheckBox = new JCheckBox();
 
         addLabelsToDialog(dialog, gbc);
@@ -117,7 +115,7 @@ public class DB2024Team13_addRestaurantWindow {
         	//유효성 검사
             if (areFieldsValid(nameField, locationField, menuField, categoryComboBox, sectionComboBox)) {
             	//'가게 추가'에 대한 트랜잭션
-            	success[0] = addRestaurantWithTransaction(
+            	success[0] = DB2024Team13_transactionManager.addRestaurantWithTransaction(
                         nameField.getText(),
                         locationField.getText(),
                         menuField.getText(),
@@ -134,7 +132,7 @@ public class DB2024Team13_addRestaurantWindow {
         });
     }
     
-    //유효성 검사
+    // 유효성 검사
     private static boolean areFieldsValid(JTextField nameField, JTextField locationField, JTextField menuField,
                                           JComboBox<String> categoryComboBox, JComboBox<String> sectionComboBox) {
         return !nameField.getText().isEmpty() &&
@@ -154,69 +152,8 @@ public class DB2024Team13_addRestaurantWindow {
         }
     }
     
-    //오류 메세지
+    // 오류 메세지
     private static void showErrorMessage(JDialog dialog, String message) {
         JOptionPane.showMessageDialog(dialog, message, "입력 오류", JOptionPane.ERROR_MESSAGE);
-    }
-    
-    //데이터베이스에서 카테고리,섹션, 데이터 목록 가져옴
-    private static String[] getCategories() {
-        return getDataFromDatabase("SELECT DISTINCT category FROM DB2024_restaurant", "category");
-    }
-
-    private static String[] getSections() {
-        return getDataFromDatabase("SELECT DISTINCT section FROM DB2024_section", "section");
-    }
-
-    private static String[] getDataFromDatabase(String query, String columnLabel) {
-        List<String> dataList = new ArrayList<>();
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                dataList.add(rs.getString(columnLabel));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return dataList.toArray(new String[0]);
-    }
-    
-    //'가게 추가'에 대한 트랜잭션 설정
-    private static boolean addRestaurantWithTransaction(String name, String location, String bestMenu, String category, boolean breakTime,
-                                                        String sectionName, boolean eatAlone) {
-        String restaurantSql = "INSERT INTO DB2024_restaurant (rest_name, location, best_menu, category, breaktime, section_name, eat_alone) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DB2024Team13_connection.getConnection();
-             PreparedStatement restaurantStmt = conn.prepareStatement(restaurantSql)) {
-            conn.setAutoCommit(false);
-
-            restaurantStmt.setString(1, name);
-            restaurantStmt.setString(2, location);
-            restaurantStmt.setString(3, bestMenu);
-            restaurantStmt.setString(4, category);
-            restaurantStmt.setBoolean(5, breakTime);
-            restaurantStmt.setString(6, sectionName);
-            restaurantStmt.setBoolean(7, eatAlone);
-            restaurantStmt.executeUpdate();
-            
-            //트랜잭션 커밋
-            conn.commit();
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            rollbackTransaction();
-            return false;
-        }
-    }
-    
-    //트랜잭션 롤백
-    private static void rollbackTransaction() {
-        try (Connection conn = DB2024Team13_connection.getConnection()) {
-            if (conn != null) {
-                conn.rollback();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

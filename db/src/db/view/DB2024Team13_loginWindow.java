@@ -2,7 +2,7 @@ package db.view;
 
 import javax.swing.*;
 
-import db.model.DB2024Team13_query;
+import db.model.DB2024Team13_loginManager;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -88,7 +88,7 @@ public class DB2024Team13_loginWindow {
                 String user = studentIdTextField.getText();
                 String password = new String(passwordField.getPassword());
 
-                if (DB2024Team13_query.validateLogin(user, password)) {
+                if (DB2024Team13_loginManager.validateLogin(user, password)) {
                     JOptionPane.showMessageDialog(loginPanel, "로그인 성공!");
                     // 로그인 성공 시 메인위도우 표시
                     showMainWindow(loginFrame);

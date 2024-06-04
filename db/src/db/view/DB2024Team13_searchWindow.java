@@ -1,7 +1,7 @@
 package db.view;
 
-import db.model.DB2024Team13_query;
-import db.model.DB2024Team13_userSession;
+import db.model.DB2024Team13_restaurantManager;
+import db.model.DB2024Team13_userSessionManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,13 +27,13 @@ public class DB2024Team13_searchWindow {
         JScrollPane scrollPane = new JScrollPane(restaurantJList);
 
         // 관리자일 경우 가게 추가 버튼 표시
-        if (DB2024Team13_userSession.getInstance().isAdmin()) {
+        if (DB2024Team13_userSessionManager.getInstance().isAdmin()) {
             JButton addRestaurantBtn = new JButton("가게 추가");
             searchBarPanel.add(addRestaurantBtn);
             addRestaurantBtn.addActionListener(e -> {
                 boolean success = DB2024Team13_addRestaurantWindow.showAddRestaurantDialog(mainPanel);
                 if (success) {
-                	DB2024Team13_query.searchRestaurant("", restaurantListModel);
+                	DB2024Team13_restaurantManager.searchRestaurant("", restaurantListModel);
                 }
             });
         }
@@ -56,11 +56,11 @@ public class DB2024Team13_searchWindow {
         // 검색 버튼 클릭 이벤트 핸들러 추가
         searchBtn.addActionListener(e -> {
             String searchText = searchTextField.getText().toLowerCase();
-            DB2024Team13_query.searchRestaurant(searchText, restaurantListModel);
+            DB2024Team13_restaurantManager.searchRestaurant(searchText, restaurantListModel);
         });
         
         // 초기 모든 식당 목록 불러오기
-        DB2024Team13_query.searchRestaurant("", restaurantListModel);
+        DB2024Team13_restaurantManager.searchRestaurant("", restaurantListModel);
 
         return mainPanel;
     }

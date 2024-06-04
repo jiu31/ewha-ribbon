@@ -4,8 +4,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-import db.model.DB2024Team13_query;
-import db.model.DB2024Team13_userSession;
+import db.model.DB2024Team13_userInfoManager;
+import db.model.DB2024Team13_userSessionManager;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -20,7 +20,7 @@ public class DB2024Team13_myInfoWindow {
 
         // 사용자 정보 표시 패널 생성
         JPanel userInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel userInfoLabel = new JLabel("안녕하세요, " + DB2024Team13_userSession.getInstance().getNickname() + "님!");
+        JLabel userInfoLabel = new JLabel("안녕하세요, " + DB2024Team13_userSessionManager.getInstance().getNickname() + "님!");
         userInfoPanel.add(userInfoLabel);
 
         myInfoPanel.add(userInfoPanel, BorderLayout.NORTH);
@@ -85,9 +85,9 @@ public class DB2024Team13_myInfoWindow {
         myInfoPanel.add(centerPanel, BorderLayout.CENTER);
         
         // 데이터베이스에서 각 옵션에 해당하는 데이터를 불러와서 모델에 추가
-        DB2024Team13_query.filterRestaurant("SELECT rest_name FROM DB2024_bookmark WHERE student_id = ?", bookmarkListModel);
-        DB2024Team13_query.filterRestaurant("SELECT rest_name, star FROM DB2024_review WHERE student_id = ?", reviewListModel);
-        DB2024Team13_query.searchOrder(orderTableModel);
+        DB2024Team13_userInfoManager.filterRestaurant("SELECT rest_name FROM DB2024_bookmark WHERE student_id = ?", bookmarkListModel);
+        DB2024Team13_userInfoManager.filterRestaurant("SELECT rest_name, star FROM DB2024_review WHERE student_id = ?", reviewListModel);
+        DB2024Team13_userInfoManager.searchOrder(orderTableModel);
 
         // 북마크 목록에서 더블 클릭 이벤트 핸들러 추가
         bookmarkList.addMouseListener(new MouseAdapter() {

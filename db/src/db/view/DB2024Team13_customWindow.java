@@ -1,7 +1,7 @@
 package db.view;
 
-import db.model.DB2024Team13_restData;
-import db.view.DB2024Team13_restInfo;
+import db.model.DB2024Team13_restaurantManager;
+import db.model.DB2024Team13_restaurantInfo;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +28,7 @@ public class DB2024Team13_customWindow {
         JComboBox<String> sortDropdown = new JComboBox<>(sortOptions);
 
         JComboBox<String> buildingDropdown = new JComboBox<>();
-        Map<String, List<DB2024Team13_restInfo>> buildingRestaurantMap = DB2024Team13_restData.loadBuildingsAndRestaurants(buildingDropdown);
+        Map<String, List<DB2024Team13_restaurantInfo>> buildingRestaurantMap = DB2024Team13_restaurantManager.getBuildingsAndRestaurants(buildingDropdown);
 
         dropdownPanel.add(buildingDropdown);
         dropdownPanel.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -99,10 +99,10 @@ public class DB2024Team13_customWindow {
         return mainSelectionPanel;
     }
 
-    private static void filterAndDisplayRestaurants(List<DB2024Team13_restInfo> restaurants, DefaultListModel<String> listModel, List<JCheckBox> checkBoxes, String sortOption) {
+    private static void filterAndDisplayRestaurants(List<DB2024Team13_restaurantInfo> restaurants, DefaultListModel<String> listModel, List<JCheckBox> checkBoxes, String sortOption) {
         listModel.clear();
-        List<DB2024Team13_restInfo> filteredRestaurants = new ArrayList<>();
-        for (DB2024Team13_restInfo restaurant : restaurants) {
+        List<DB2024Team13_restaurantInfo> filteredRestaurants = new ArrayList<>();
+        for (DB2024Team13_restaurantInfo restaurant : restaurants) {
             boolean matchesCategory = checkBoxes.stream()
                     .filter(JCheckBox::isSelected)
                     .map(JCheckBox::getText)
@@ -116,26 +116,26 @@ public class DB2024Team13_customWindow {
         sortRestaurants(filteredRestaurants, sortOption);
 
         filteredRestaurants.stream()
-                .map(DB2024Team13_restInfo::getName)
+                .map(DB2024Team13_restaurantInfo::getName)
                 .distinct()
                 .forEach(listModel::addElement);
     }
 
-    private static void sortRestaurants(List<DB2024Team13_restInfo> restaurants, String sortOption) {
+    private static void sortRestaurants(List<DB2024Team13_restaurantInfo> restaurants, String sortOption) {
         switch (sortOption) {
             case "주문순":
-                restaurants.sort(Comparator.comparingInt(DB2024Team13_restInfo::getOrderCount).reversed());
+                restaurants.sort(Comparator.comparingInt(DB2024Team13_restaurantInfo::getOrderCount).reversed());
                 break;
             case "평점순":
-                restaurants.sort(Comparator.comparingDouble(DB2024Team13_restInfo::getAvgRating).reversed());
+                restaurants.sort(Comparator.comparingDouble(DB2024Team13_restaurantInfo::getAvgRating).reversed());
                 break;
             case "이름순":
-                restaurants.sort(Comparator.comparing(DB2024Team13_restInfo::getName));
+                restaurants.sort(Comparator.comparing(DB2024Team13_restaurantInfo::getName));
                 break;
         }
     }
 
-    private static List<DB2024Team13_restInfo> getFilteredRestaurants(JComboBox<String> buildingDropdown, Map<String, List<DB2024Team13_restInfo>> buildingRestaurantMap) {
+    private static List<DB2024Team13_restaurantInfo> getFilteredRestaurants(JComboBox<String> buildingDropdown, Map<String, List<DB2024Team13_restaurantInfo>> buildingRestaurantMap) {
         String selectedBuilding = (String) buildingDropdown.getSelectedItem();
         if ("전체".equals(selectedBuilding)) {
             return getAllRestaurants(buildingRestaurantMap);
@@ -144,8 +144,8 @@ public class DB2024Team13_customWindow {
         }
     }
 
-    private static List<DB2024Team13_restInfo> getAllRestaurants(Map<String, List<DB2024Team13_restInfo>> buildingRestaurantMap) {
-        List<DB2024Team13_restInfo> allRestaurants = new ArrayList<>();
+    private static List<DB2024Team13_restaurantInfo> getAllRestaurants(Map<String, List<DB2024Team13_restaurantInfo>> buildingRestaurantMap) {
+        List<DB2024Team13_restaurantInfo> allRestaurants = new ArrayList<>();
         buildingRestaurantMap.values().forEach(allRestaurants::addAll);
         return allRestaurants;
     }

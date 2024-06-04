@@ -1,16 +1,16 @@
 package db.model;
 
-public class DB2024Team13_userSession {
+public class DB2024Team13_userSessionManager {
 	
-    private static DB2024Team13_userSession instance;
+    private static DB2024Team13_userSessionManager instance;
     private String studentId;
     private String nickname;
 
-    private DB2024Team13_userSession() {}
+    private DB2024Team13_userSessionManager() {}
 
-    public static DB2024Team13_userSession getInstance() {
+    public static DB2024Team13_userSessionManager getInstance() {
         if (instance == null) {
-            instance = new DB2024Team13_userSession();
+            instance = new DB2024Team13_userSessionManager();
         }
         return instance;
     }
