@@ -1,6 +1,7 @@
-package db.controller;
+package db.model;
 
 public class DB2024Team13_userSession {
+	
     private static DB2024Team13_userSession instance;
     private String studentId;
     private String nickname;
@@ -18,11 +19,11 @@ public class DB2024Team13_userSession {
         this.studentId = studentId;
         this.nickname = nickname;
     }
-
+    
     public String getStudentId() {
         return studentId;
     }
-
+    
     public String getNickname() {
         return nickname;
     }
@@ -34,9 +35,5 @@ public class DB2024Team13_userSession {
 
     public boolean isAdmin() {
         return "0000".equals(studentId);
-    }
-  
-    public String getUserId() {
-        return studentId;
     }
 }

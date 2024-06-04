@@ -1,10 +1,10 @@
 package db.view;
 
-import db.controller.DB2024Team13_connection;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import db.model.DB2024Team13_connection;
 
 public class DB2024Team13_utils {
 

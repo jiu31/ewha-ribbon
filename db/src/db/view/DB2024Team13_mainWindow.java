@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DB2024Team13_mainWindow {
-    // Constants
+    // 상수 정의
     private static final int WINDOW_WIDTH = 900;
     private static final int WINDOW_HEIGHT = 700;
   
@@ -17,11 +17,12 @@ public class DB2024Team13_mainWindow {
     private static final Color COLOR_SELECTED_BUTTON_TEXT = Color.WHITE;
     private static final Color COLOR_DEFAULT_BUTTON_TEXT = Color.BLACK;
 
+    // 메인 패널과 사이드바 버튼 리스트 초기화
     private final JPanel mainPanel = new JPanel(new BorderLayout());
     private final List<JButton> sidebarButtonList = new ArrayList<>();
-    private JButton mainButton;  // "메인" 버튼을 참조할 필드를 추가합니다.
+    private JButton mainButton;
 
-    // Main window execution method
+    // 메인 윈도우 실행 메소드
     public static void launchMainWindow() {
         SwingUtilities.invokeLater(() -> {
             DB2024Team13_mainWindow app = new DB2024Team13_mainWindow();
@@ -30,13 +31,13 @@ public class DB2024Team13_mainWindow {
         });
     }
 
-    // Constructor
+    // 생성자
     public DB2024Team13_mainWindow() {
-        // Set initial content to "메인" panel and highlight "메인" button
+        // 초기 컨텐츠를 "메인" 패널로 설정하고 사이드바의 "메인" 버튼 하이라이트
         displayContent(DB2024Team13_customWindow.createSelectionPanel(this));
     }
 
-    // Create main frame
+    // 메인 프레임 생성
     private JFrame createMainFrame() {
         JFrame frame = new JFrame("EwhaRibbon");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,7 +51,7 @@ public class DB2024Team13_mainWindow {
         return frame;
     }
 
-    // Create title bar panel
+    // 타이틀 바 패널 생성
     public JPanel createTitleBar() {
         JPanel titleBarPanel = new JPanel(new BorderLayout());
         titleBarPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, 50));
@@ -64,20 +65,21 @@ public class DB2024Team13_mainWindow {
         return titleBarPanel;
     }
 
-    // Create sidebar panel
+    // 사이드바 패널 생성
     public JPanel createSidebar() {
         JPanel sidebarPanel = new JPanel();
         sidebarPanel.setPreferredSize(new Dimension(200, WINDOW_HEIGHT));
         sidebarPanel.setBackground(COLOR_DEFAULT_BUTTON);
         sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
 
-        // "메인" 버튼을 생성하고 mainButton 필드에 할당합니다.
+        // "메인" 버튼을 생성하고 mainButton 필드에 할당
         mainButton = addSidebarButton(sidebarPanel, "메인", e -> displayContent(DB2024Team13_customWindow.createSelectionPanel(this)));
+        // 나머지 버튼 생성
         addSidebarButton(sidebarPanel, "검색", e -> displayContent(DB2024Team13_searchWindow.createSearchPanel(this)));
-        addSidebarButton(sidebarPanel, "내정보", e -> displayContent(DB2024Team13_myinfoWindow.createMyInfoPanel(this)));
+        addSidebarButton(sidebarPanel, "내정보", e -> displayContent(DB2024Team13_myInfoWindow.createMyInfoPanel(this)));
         sidebarPanel.add(Box.createVerticalGlue());
         
-        // Add logout button
+        // 로그아웃 버튼 추가
         addLogoutButton(sidebarPanel);
 
         // 초기화 시 "메인" 버튼을 하이라이트
@@ -86,7 +88,7 @@ public class DB2024Team13_mainWindow {
         return sidebarPanel;
     }
 
-    // Add sidebar button
+    // 사이드바 버튼 추가
     private JButton addSidebarButton(JPanel sidebarPanel, String text, ActionListener actionListener) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -99,10 +101,10 @@ public class DB2024Team13_mainWindow {
         });
         sidebarButtonList.add(button);
         sidebarPanel.add(button);
-        return button;  // 생성된 버튼을 반환합니다.
+        return button;  // 생성된 버튼을 반환
     }
 
-    // Add logout button
+    // 로그아웃 버튼 추가
     private void addLogoutButton(JPanel sidebarPanel) {
         JButton logoutButton = new JButton("로그아웃");
         logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -111,13 +113,13 @@ public class DB2024Team13_mainWindow {
         logoutButton.setForeground(Color.WHITE);
         logoutButton.addActionListener(e -> {
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(logoutButton);
-            frame.dispose();  // Close the current window
-            DB2024Team13_loginWindow.displayLoginWindow();  // Display the login window
+            frame.dispose();  // 현재 창 닫기
+            DB2024Team13_loginWindow.displayLoginWindow();  // 로그인 창 표시
         });
         sidebarPanel.add(logoutButton);
     }
 
-    // Highlight selected button
+    // 선택된 사이드바 버튼 강조
     private void setSelectedButtonHighlight(JButton selectedButton) {
         for (JButton button : sidebarButtonList) {
             if (button == selectedButton) {
@@ -130,18 +132,18 @@ public class DB2024Team13_mainWindow {
         }
     }
 
-    // Return main content panel
+    // 메인 컨텐츠 패널 반환
     public JPanel getMainPanel() {
         return mainPanel;
     }
 
-    // Display detailed information
+    // 상세 정보 표시
     public void displayDetail(String restaurant) {
         JPanel detailPanel = DB2024Team13_detailWindow.createDetailPanel(restaurant);
         displayContent(detailPanel);
     }
 
-    // Display content
+    // 컨텐츠 표시
     private void displayContent(Component component) {
         mainPanel.removeAll();
         mainPanel.add(component, BorderLayout.CENTER);

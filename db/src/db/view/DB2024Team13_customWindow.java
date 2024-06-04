@@ -1,7 +1,9 @@
 package db.view;
 
-import db.controller.DB2024Team13_connection;
 import javax.swing.*;
+
+import db.model.DB2024Team13_connection;
+
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;

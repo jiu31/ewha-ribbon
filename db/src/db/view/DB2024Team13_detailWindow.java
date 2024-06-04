@@ -1,7 +1,7 @@
 package db.view;
 
-import db.controller.DB2024Team13_userSession;
-import db.controller.DB2024Team13_connection;
+import db.model.DB2024Team13_connection;
+import db.model.DB2024Team13_userSession;
 import db.view.DB2024Team13_utils;
 
 import javax.swing.*;
