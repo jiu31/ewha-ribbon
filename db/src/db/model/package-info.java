@@ -3,7 +3,7 @@
  * 
  * <p>이 패키지의 클래스들은 데이터베이스와의 상호작용을 관리하고, 데이터베이스 관련 작업들을 수행합니다.</p>
  * 
- * <p>주요 클래스:
+ * <p>주요 클래스:</p>
  * <ul>
  * <li>{@link DB2024Team13_bookmarkManager} - 식당 즐겨찾기를 관리합니다.</li>
  * <li>{@link DB2024Team13_connection} - 데이터베이스 연결을 관리합니다.</li>
@@ -15,7 +15,6 @@
  * <li>{@link DB2024Team13_userInfoManager} - 사용자 정보를 관리합니다.</li>
  * <li>{@link DB2024Team13_userSessionManager} - 사용자 세션을 관리합니다.</li>
  * </ul>
- * </p>
  */
 
 package db.model;

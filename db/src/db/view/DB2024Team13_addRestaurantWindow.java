@@ -25,20 +25,19 @@ public class DB2024Team13_addRestaurantWindow {
         // 가게 정보 입력 받는 field 및 comboBox 생성, dialog 추가
         JTextField nameField = new JTextField(15);
         JTextField locationField = new JTextField(15);
-        JTextField menuField = new JTextField(15);
         JComboBox<String> categoryComboBox = new JComboBox<>(DB2024Team13_restaurantManager.getCategories());
         JCheckBox breakTimeCheckBox = new JCheckBox();
         JComboBox<String> sectionComboBox = new JComboBox<>(DB2024Team13_restaurantManager.getSections());
         JCheckBox eatAloneCheckBox = new JCheckBox();
 
         addLabelsToDialog(dialog, gbc);
-        addFieldsToDialog(dialog, gbc, nameField, locationField, menuField, categoryComboBox, breakTimeCheckBox, sectionComboBox, eatAloneCheckBox);
+        addFieldsToDialog(dialog, gbc, nameField, locationField, categoryComboBox, breakTimeCheckBox, sectionComboBox, eatAloneCheckBox);
 
         boolean[] success = {false};
 
         // 가게추가 버튼인 "추가하기" 설정
         JButton submitButton = new JButton("추가하기");
-        addSubmitButtonToDialog(dialog, gbc, submitButton, nameField, locationField, menuField, categoryComboBox, breakTimeCheckBox, sectionComboBox, eatAloneCheckBox, success);
+        addSubmitButtonToDialog(dialog, gbc, submitButton, nameField, locationField, categoryComboBox, breakTimeCheckBox, sectionComboBox, eatAloneCheckBox, success);
 
         dialog.setVisible(true);
         return success[0];
@@ -83,8 +82,6 @@ public class DB2024Team13_addRestaurantWindow {
         gbc.gridy++;
         dialog.add(new JLabel("위치:"), gbc);
         gbc.gridy++;
-        dialog.add(new JLabel("대표 메뉴:"), gbc);
-        gbc.gridy++;
         dialog.add(new JLabel("카테고리:"), gbc);
         gbc.gridy++;
         dialog.add(new JLabel("브레이크 타임:"), gbc);
@@ -101,14 +98,13 @@ public class DB2024Team13_addRestaurantWindow {
      * @param gbc               GridBagConstraints 객체
      * @param nameField         가게 이름 입력 필드
      * @param locationField     위치 입력 필드
-     * @param menuField         대표 메뉴 입력 필드
      * @param categoryComboBox  카테고리 콤보박스
      * @param breakTimeCheckBox 브레이크 타임 체크박스
      * @param sectionComboBox   섹션 이름 콤보박스
      * @param eatAloneCheckBox  혼밥 가능 체크박스
      */
     private static void addFieldsToDialog(JDialog dialog, GridBagConstraints gbc, JTextField nameField, JTextField locationField,
-                                          JTextField menuField, JComboBox<String> categoryComboBox, JCheckBox breakTimeCheckBox,
+                                          JComboBox<String> categoryComboBox, JCheckBox breakTimeCheckBox,
                                           JComboBox<String> sectionComboBox, JCheckBox eatAloneCheckBox) {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridx = 1;
@@ -116,8 +112,6 @@ public class DB2024Team13_addRestaurantWindow {
         dialog.add(nameField, gbc);
         gbc.gridy++;
         dialog.add(locationField, gbc);
-        gbc.gridy++;
-        dialog.add(menuField, gbc);
         gbc.gridy++;
         dialog.add(categoryComboBox, gbc);
         gbc.gridy++;
@@ -136,7 +130,6 @@ public class DB2024Team13_addRestaurantWindow {
      * @param submitButton      "추가하기" 버튼
      * @param nameField         가게 이름 입력 필드
      * @param locationField     위치 입력 필드
-     * @param menuField         대표 메뉴 입력 필드
      * @param categoryComboBox  카테고리 콤보박스
      * @param breakTimeCheckBox 브레이크 타임 체크박스
      * @param sectionComboBox   섹션 이름 콤보박스
@@ -144,7 +137,7 @@ public class DB2024Team13_addRestaurantWindow {
      * @param success           성공 여부를 저장할 배열
      */
     private static void addSubmitButtonToDialog(JDialog dialog, GridBagConstraints gbc, JButton submitButton, JTextField nameField,
-                                                JTextField locationField, JTextField menuField, JComboBox<String> categoryComboBox,
+                                                JTextField locationField,JComboBox<String> categoryComboBox,
                                                 JCheckBox breakTimeCheckBox, JComboBox<String> sectionComboBox, JCheckBox eatAloneCheckBox,
                                                 boolean[] success) {
         gbc.gridx = 1;
@@ -155,12 +148,11 @@ public class DB2024Team13_addRestaurantWindow {
         // "추가하기"버튼에 대한 액션
         submitButton.addActionListener(e -> {
             // 유효성 검사
-            if (areFieldsValid(nameField, locationField, menuField, categoryComboBox, sectionComboBox)) {
+            if (areFieldsValid(nameField, locationField,categoryComboBox, sectionComboBox)) {
                 // '가게 추가'에 대한 트랜잭션
                 success[0] = DB2024Team13_restaurantManager.addRestaurant(
                         nameField.getText(),
                         locationField.getText(),
-                        menuField.getText(),
                         (String) categoryComboBox.getSelectedItem(),
                         breakTimeCheckBox.isSelected(),
                         (String) sectionComboBox.getSelectedItem(),
@@ -179,16 +171,14 @@ public class DB2024Team13_addRestaurantWindow {
      *
      * @param nameField        가게 이름 입력 필드
      * @param locationField    위치 입력 필드
-     * @param menuField        대표 메뉴 입력 필드
      * @param categoryComboBox 카테고리 콤보박스
      * @param sectionComboBox  섹션 이름 콤보박스
      * @return 모든 필드가 유효한 경우 true, 그렇지 않은 경우 false를 반환합니다.
      */
-    private static boolean areFieldsValid(JTextField nameField, JTextField locationField, JTextField menuField,
+    private static boolean areFieldsValid(JTextField nameField, JTextField locationField,
                                           JComboBox<String> categoryComboBox, JComboBox<String> sectionComboBox) {
         return !nameField.getText().isEmpty() &&
                !locationField.getText().isEmpty() &&
-               !menuField.getText().isEmpty() &&
                categoryComboBox.getSelectedItem() != null &&
                sectionComboBox.getSelectedItem() != null;
     }
