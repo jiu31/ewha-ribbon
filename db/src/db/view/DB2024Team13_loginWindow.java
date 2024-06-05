@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 
 /**
  * 로그인 창을 표시하는 클래스입니다.
+ * <p>이 클래스는 사용자가 로그인할 수 있는 창을 생성하고 표시하는 기능을 제공합니다. 
+ * 로그인 성공 시 메인 윈도우로 전환됩니다.</p>
  */
 public class DB2024Team13_loginWindow {
     private static final int WINDOW_WIDTH = 900;

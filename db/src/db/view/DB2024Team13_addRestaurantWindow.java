@@ -7,6 +7,7 @@ import java.awt.*;
 
 /**
  * 가게 추가 창을 표시하는 클래스입니다.
+ * <p>이 클래스는 새로운 가게를 추가하기 위한 다이얼로그 창을 생성하고 표시하는 기능을 제공합니다.</p>
  */
 public class DB2024Team13_addRestaurantWindow {
 
