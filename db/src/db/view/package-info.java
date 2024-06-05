@@ -3,7 +3,7 @@
  * 
  * <p>이 패키지의 클래스들은 사용자에게 데이터를 표시하고 사용자 입력을 처리합니다.</p>
  * 
- * <p>주요 클래스:
+ * <p>주요 클래스:</p>
  * <ul>
  * <li>{@link DB2024Team13_addRestaurantWindow} - 가게 추가 창을 표시합니다.</li>
  * <li>{@link DB2024Team13_addReviewWindow} - 리뷰 추가 창을 표시합니다.</li>
@@ -16,7 +16,6 @@
  * <li>{@link DB2024Team13_myInfoWindow} - '내 정보' 패널을 생성합니다.</li>
  * <li>{@link DB2024Team13_searchWindow} - '검색' 패널을 생성합니다.</li>
  * </ul>
- * </p>
  */
 
 package db.view;

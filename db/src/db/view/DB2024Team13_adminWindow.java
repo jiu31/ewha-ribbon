@@ -25,7 +25,7 @@ public class DB2024Team13_adminWindow {
      */
     public static void showAdminWindow(String restaurant, JPanel mainDetailPanel) {
         JFrame frame = new JFrame("관리자 - 레스토랑 정보 관리");
-        frame.setSize(400, 600);
+        frame.setSize(400, 500);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
@@ -58,15 +58,6 @@ public class DB2024Team13_adminWindow {
 
         gbc.gridx++;
         panel.add(categoryComboBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        JLabel bestMenuLabel = new JLabel("대표메뉴:");
-        JTextField bestMenuField = new JTextField(20);
-        panel.add(bestMenuLabel, gbc);
-
-        gbc.gridx++;
-        panel.add(bestMenuField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
@@ -138,7 +129,7 @@ public class DB2024Team13_adminWindow {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	DB2024Team13_restaurantManager.updateRestaurantDetails(restaurant, (String) categoryComboBox.getSelectedItem(), bestMenuField.getText(), (String) sectionComboBox.getSelectedItem(), locationField.getText(), breaktimeCheckBox.isSelected(), eatAloneCheckBox.isSelected());
+            	DB2024Team13_restaurantManager.updateRestaurantDetails(restaurant, (String) categoryComboBox.getSelectedItem(), (String) sectionComboBox.getSelectedItem(), locationField.getText(), breaktimeCheckBox.isSelected(), eatAloneCheckBox.isSelected());
                 DB2024Team13_detailWindow.refreshDetailPanel(mainDetailPanel, restaurant);
                 frame.dispose();
             }
@@ -150,7 +141,6 @@ public class DB2024Team13_adminWindow {
         // 레스토랑 세부 정보 불러오기
         Map<String, Object> details = DB2024Team13_restaurantManager.loadRestaurantDetails(restaurant);
         categoryComboBox.setSelectedItem(details.getOrDefault("category", ""));
-        bestMenuField.setText((String) details.getOrDefault("bestMenu", ""));
         locationField.setText((String) details.getOrDefault("location", ""));
         sectionComboBox.setSelectedItem(details.getOrDefault("section", ""));
         breaktimeCheckBox.setSelected((Boolean) details.getOrDefault("breaktime", false));

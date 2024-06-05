@@ -59,12 +59,10 @@ public class DB2024Team13_detailWindow {
 
         addDetailLabel(detailsContentPanel, "별점: ", "avgRatingLabel");
         addDetailLabel(detailsContentPanel, "카테고리: ", "categoryLabel");
-        addDetailLabel(detailsContentPanel, "대표메뉴: ", "bestMenuLabel");
-        addDetailLabel(detailsContentPanel, "전체메뉴 ", "menuLabel");
-
+       
         JPanel menuInfoPanel = new JPanel();
         menuInfoPanel.setLayout(new BoxLayout(menuInfoPanel, BoxLayout.Y_AXIS));
-        menuInfoPanel.setName("menuInfoPanel");
+        menuInfoPanel.setName("menuInfoPanel");       
         detailsContentPanel.add(menuInfoPanel);
         detailsContentPanel.add(Box.createVerticalStrut(10)); // 공백 추가
         detailsContentPanel.add(createSeparator());
@@ -237,7 +235,6 @@ public class DB2024Team13_detailWindow {
     private static void updateDetailLables(Map<String, Object> details, JPanel mainDetailPanel) {
         setLabelText(mainDetailPanel, "avgRatingLabel", "별점: " + String.format("%.2f", (Double) details.getOrDefault("avgRating", 0.0)));
         setLabelText(mainDetailPanel, "categoryLabel", "카테고리: " + details.getOrDefault("category", "N/A"));
-        setLabelText(mainDetailPanel, "bestMenuLabel", "대표메뉴: " + details.getOrDefault("bestMenu", "N/A"));
         setLabelText(mainDetailPanel, "sectionLabel", "구역 이름: " + details.getOrDefault("section", "N/A"));
         setLabelText(mainDetailPanel, "locationLabel", "위치: " + details.getOrDefault("location", "N/A"));
         setLabelText(mainDetailPanel, "veganLabel", "비건메뉴 여부: " + ((boolean) details.getOrDefault("vegan", false) ? "O" : "X"));
@@ -260,6 +257,11 @@ public class DB2024Team13_detailWindow {
         boolean hasVegan = false;
         menuInfoPanel.removeAll();
         menuInfoPanel.setBackground(Color.WHITE);
+        
+        JLabel menuTitleLabel = createDetailLabel("전체 메뉴:");
+        menuTitleLabel.setOpaque(false);
+        menuInfoPanel.add(menuTitleLabel);
+        
         while (rs.next()) {
             String menuInfo = rs.getString("menu_name") + " - " +
                               rs.getInt("price") + "원" +
