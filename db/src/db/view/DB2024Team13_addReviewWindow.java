@@ -57,9 +57,9 @@ public class DB2024Team13_addReviewWindow {
             public void actionPerformed(ActionEvent e) {
                 double star;
                 try {
-                    star = Integer.parseInt(starField.getText());
-                    if (star < 1 || star > 5) {
-                        JOptionPane.showMessageDialog(reviewDialog, "별점: 1~5 사이 숫자를 입력해주세요.");
+                    star = Double.parseDouble(starField.getText());
+                    if (star < 0 || star > 5) {
+                        JOptionPane.showMessageDialog(reviewDialog, "별점: 0~5 사이 숫자를 입력해주세요.");
                         return;
                     }
                 } catch (NumberFormatException ex) {

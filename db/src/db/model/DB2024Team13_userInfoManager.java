@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  * 사용자 정보를 관리하는 클래스입니다.
+ * <p>이 클래스는 사용자의 식당 정보 필터링 및 주문 검색 기능을 제공합니다.</p>
  */
 public class DB2024Team13_userInfoManager {
 
@@ -29,7 +30,7 @@ public class DB2024Team13_userInfoManager {
                 while (rs.next()) {
                     String restaurantName = rs.getString("rest_name");
                     if (rs.getMetaData().getColumnCount() > 1) {
-                        int star = rs.getInt("star");
+                        double star = rs.getDouble("star");
                         listModel.addElement(restaurantName + " - 별점: " + star);
                     } else {
                         listModel.addElement(restaurantName);

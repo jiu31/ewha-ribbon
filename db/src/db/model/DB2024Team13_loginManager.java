@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 /**
  * 로그인 기능을 관리하는 클래스입니다.
+ * <p>이 클래스는 사용자의 학번과 비밀번호를 검증하여 로그인 기능을 제공합니다.</p>
  */
 public class DB2024Team13_loginManager {
 

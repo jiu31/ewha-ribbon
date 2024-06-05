@@ -6,6 +6,8 @@ import java.sql.SQLException;
 
 /**
  * 데이터베이스와 연결을 관리하는 클래스입니다.
+ * <p>이 클래스는 싱글톤 패턴을 사용하여 데이터베이스 연결을 관리합니다.
+ * 데이터베이스 연결을 반환하고, 연결이 열려있는지 여부를 확인하는 기능을 제공합니다.</p>
  */
 public class DB2024Team13_connection {
     private static final String DB_URL = "jdbc:mysql://localhost/DB2024Team13";

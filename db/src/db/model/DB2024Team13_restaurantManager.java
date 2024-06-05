@@ -18,6 +18,7 @@ import java.util.Set;
 
 /**
  * 식당을 관리하는 클래스입니다.
+ * <p>이 클래스는 식당 정보를 검색, 추가, 수정, 삭제하고, 식당의 메뉴와 세부 정보를 관리하는 기능을 제공합니다.</p>
  */
 public class DB2024Team13_restaurantManager {
 

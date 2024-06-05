@@ -2,6 +2,7 @@ package db.model;
 
 /**
  * 가게 정보에 대한 항목 및 특성을 처리하는 클래스입니다.
+ * <p>이 클래스는 가게의 이름, 위치, 대표 메뉴, 카테고리, 브레이크 타임 여부, 혼밥 가능 여부, 주문 수 및 평균 평점을 관리합니다.</p>
  */
 public class DB2024Team13_restaurantInfo {
     private String name;

@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * DB2024Team13_bookmarkManager 클래스는 데이터베이스에서 레스토랑 즐겨찾기를 관리하는 메서드를 제공합니다.
- * 즐겨찾기 확인, 추가 및 삭제 기능을 포함합니다.
+ * 식당 즐겨찾기를 관리하는 클래스입니다.
+ * <p>이 클래스는 즐겨찾기 확인, 추가 및 삭제 기능을 포함합니다.</p>
  */
 public class DB2024Team13_bookmarkManager {
     

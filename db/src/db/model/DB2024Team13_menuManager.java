@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 /**
  * 메뉴를 관리하는 클래스입니다.
+ * <p>이 클래스는 메뉴 아이템을 추가, 수정, 삭제 및 조회하는 기능을 제공합니다.</p>
  */
 public class DB2024Team13_menuManager {
 
