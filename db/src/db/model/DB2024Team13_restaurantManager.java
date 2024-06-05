@@ -78,8 +78,11 @@ public class DB2024Team13_restaurantManager {
     public static Map<String, Object> loadRestaurantDetails(String restaurantName) {
         Map<String, Object> details = new HashMap<>();
         String detailsQuery = "SELECT best_menu, location, breaktime, eat_alone, category, section_name, AVG(star) as avgRating " +
-                "FROM DB2024_restaurant r LEFT JOIN DB2024_review rv ON r.rest_name = rv.rest_name " +
-                "WHERE r.rest_name = ? GROUP BY r.rest_name, r.best_menu, r.location, r.breaktime, r.eat_alone, r.category, r.section_name";
+                "FROM DB2024_restaurant USE INDEX (idx_restaurant_rest_name) " +
+                "LEFT JOIN DB2024_review ON DB2024_restaurant.rest_name = DB2024_review.rest_name " +
+                "WHERE DB2024_restaurant.rest_name = ? GROUP BY DB2024_restaurant.rest_name, DB2024_restaurant.best_menu, DB2024_restaurant.location, DB2024_restaurant.breaktime, DB2024_restaurant.eat_alone, DB2024_restaurant.category, DB2024_restaurant.section_name";
+
+
         try (Connection conn = DB2024Team13_connection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(detailsQuery)) {
             stmt.setString(1, restaurantName);
@@ -264,7 +267,7 @@ public class DB2024Team13_restaurantManager {
         String restaurantQuery = "SELECT rest_name, location, best_menu, category, breaktime, eat_alone, section_name, " +
                 "(SELECT order_count FROM DB2024_rest_order_count WHERE DB2024_rest_order_count.rest_name = DB2024_restaurant.rest_name) as order_count, " +
                 "(SELECT avg_rating FROM DB2024_rest_avg_rating WHERE DB2024_rest_avg_rating.rest_name = DB2024_restaurant.rest_name) as avg_rating " +
-                "FROM DB2024_restaurant WHERE section_name = ?";
+                "FROM DB2024_restaurant USE INDEX (idx_restaurant_section_name) WHERE section_name = ?";
         try (Connection conn = DB2024Team13_connection.getConnection();
              PreparedStatement buildingStmt = conn.prepareStatement(buildingQuery);
              ResultSet buildingRs = buildingStmt.executeQuery()) {

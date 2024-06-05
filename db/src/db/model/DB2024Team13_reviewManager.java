@@ -20,7 +20,7 @@ public class DB2024Team13_reviewManager {
      * @return 리뷰 추가 성공 시 true, 실패 시 false를 반환합니다.
      */
     public static boolean addReview(String restaurantName, String studentId, double star) {
-        String query1 = "SELECT MAX(review_id) FROM DB2024_review";
+        String query1 = "SELECT MAX(review_id) FROM DB2024_review USE INDEX (idx_review_id)";
         String query2 = "INSERT INTO DB2024_review (review_id, rest_name, student_id, star) VALUES (?, ?, ?, ?)";
         try (Connection conn = DB2024Team13_connection.getConnection();
              PreparedStatement pStmt1 = conn.prepareStatement(query1);

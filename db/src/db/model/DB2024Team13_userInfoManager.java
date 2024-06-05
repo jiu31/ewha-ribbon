@@ -49,7 +49,8 @@ public class DB2024Team13_userInfoManager {
      */
     public static void searchOrder(DefaultTableModel tableModel) {
         tableModel.setRowCount(0);
-        String query = "SELECT rest_name, menu_name, order_date_time FROM DB2024_order WHERE student_id = ? ORDER BY order_date_time";
+        String query = "SELECT rest_name, menu_name, order_date_time FROM DB2024_order USE INDEX (idx_order_student_date) WHERE student_id = ? ORDER BY order_date_time";
+
         try (Connection conn = DB2024Team13_connection.getConnection();
              PreparedStatement pStmt = conn.prepareStatement(query)) {
             pStmt.setString(1, DB2024Team13_userSessionManager.getInstance().getStudentId());

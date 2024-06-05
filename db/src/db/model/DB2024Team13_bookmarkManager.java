@@ -19,7 +19,7 @@ public class DB2024Team13_bookmarkManager {
      * @return 해당 레스토랑이 학생에 의해 즐겨찾기 되어있으면 true, 아니면 false
      */
     public static boolean isRestaurantBookmarked(String studentId, String restaurantName) {
-        String query = "SELECT COUNT(*) FROM DB2024_bookmark WHERE student_id = ? AND rest_name = ?";
+        String query = "SELECT COUNT(*) FROM DB2024_bookmark USE INDEX (idx_bookmark_student_rest) WHERE student_id = ? AND rest_name = ?";
         return executeCountQuery(query, studentId, restaurantName);
     }
 
