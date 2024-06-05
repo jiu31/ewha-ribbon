@@ -1,19 +1,28 @@
 package db.view;
 
+import db.model.DB2024Team13_userInfoManager;
+import db.model.DB2024Team13_userSessionManager;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-
-import db.model.DB2024Team13_userInfoManager;
-import db.model.DB2024Team13_userSessionManager;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+
+/**
+ * '내 정보' 패널을 생성하는 클래스입니다.
+ */
 public class DB2024Team13_myInfoWindow {
 
-    // '내 정보' 패널 생성
+	/**
+     * '내 정보' 패널을 생성하는 메소드입니다.
+     *
+     * @param mainWindow 메인 윈도우 객체
+     * @return 생성된 JPanel 객체
+     */
     public static JPanel createMyInfoPanel(DB2024Team13_mainWindow mainWindow) {
         JPanel myInfoPanel = new JPanel(new BorderLayout());
         myInfoPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -113,7 +122,12 @@ public class DB2024Team13_myInfoWindow {
         return myInfoPanel;
     }
 
-    // CardLayout을 사용하여 카드 보여주기
+    /**
+     * CardLayout을 사용하여 카드 보여주기
+     *
+     * @param panel 카드 레이아웃을 사용하는 패널
+     * @param card 보여줄 카드 이름
+     */
     private static void showCard(JPanel panel, String card) {
         CardLayout cardLayout = (CardLayout) (panel.getLayout());
         cardLayout.show(panel, card);

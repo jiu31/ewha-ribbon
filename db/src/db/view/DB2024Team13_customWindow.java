@@ -4,16 +4,26 @@ import db.model.DB2024Team13_restaurantManager;
 import db.model.DB2024Team13_restaurantInfo;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import java.util.*;
 import java.util.List;
 
+/**
+ * 사용자가 보는 화면을 설정하고 레스토랑 데이터를 필터링하여 표시하는 클래스입니다.
+ */
 public class DB2024Team13_customWindow {
 	
-	//restData와 restInfo에서 정보 및 속성을 가져와 사용자가 보는 화면을 설정함
+	/**
+     * restData와 restInfo에서 정보 및 속성을 가져와 사용자가 보는 화면을 설정하는 메소드입니다.
+     *
+     * @param mainWindow 메인 윈도우 객체
+     * @return 설정된 JPanel 객체
+     */
     public static JPanel createSelectionPanel(DB2024Team13_mainWindow mainWindow) {
         JPanel mainSelectionPanel = new JPanel(new BorderLayout());
         mainSelectionPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -99,6 +109,14 @@ public class DB2024Team13_customWindow {
         return mainSelectionPanel;
     }
 
+    /**
+     * 레스토랑 정보를 필터링하고 결과를 표시하는 메소드입니다.
+     *
+     * @param restaurants 필터링할 레스토랑 목록
+     * @param listModel 결과를 추가할 DefaultListModel 객체
+     * @param checkBoxes 선택된 카테고리 체크박스 목록
+     * @param sortOption 정렬 옵션
+     */
     private static void filterAndDisplayRestaurants(List<DB2024Team13_restaurantInfo> restaurants, DefaultListModel<String> listModel, List<JCheckBox> checkBoxes, String sortOption) {
         listModel.clear();
         List<DB2024Team13_restaurantInfo> filteredRestaurants = new ArrayList<>();
@@ -120,7 +138,13 @@ public class DB2024Team13_customWindow {
                 .distinct()
                 .forEach(listModel::addElement);
     }
-
+    
+    /**
+     * 레스토랑 목록을 정렬하는 메소드입니다.
+     *
+     * @param restaurants 정렬할 레스토랑 목록
+     * @param sortOption 정렬 옵션
+     */
     private static void sortRestaurants(List<DB2024Team13_restaurantInfo> restaurants, String sortOption) {
         switch (sortOption) {
             case "주문순":
@@ -135,6 +159,13 @@ public class DB2024Team13_customWindow {
         }
     }
 
+    /**
+     * 선택된 건물에 따라 필터링된 레스토랑 목록을 반환하는 메소드입니다.
+     *
+     * @param buildingDropdown 선택된 건물 드롭다운
+     * @param buildingRestaurantMap 건물별 레스토랑 정보 맵
+     * @return 필터링된 레스토랑 목록
+     */
     private static List<DB2024Team13_restaurantInfo> getFilteredRestaurants(JComboBox<String> buildingDropdown, Map<String, List<DB2024Team13_restaurantInfo>> buildingRestaurantMap) {
         String selectedBuilding = (String) buildingDropdown.getSelectedItem();
         if ("전체".equals(selectedBuilding)) {
@@ -144,6 +175,12 @@ public class DB2024Team13_customWindow {
         }
     }
 
+    /**
+     * 모든 레스토랑 목록을 반환하는 메소드입니다.
+     *
+     * @param buildingRestaurantMap 건물별 레스토랑 정보 맵
+     * @return 모든 레스토랑 목록
+     */
     private static List<DB2024Team13_restaurantInfo> getAllRestaurants(Map<String, List<DB2024Team13_restaurantInfo>> buildingRestaurantMap) {
         List<DB2024Team13_restaurantInfo> allRestaurants = new ArrayList<>();
         buildingRestaurantMap.values().forEach(allRestaurants::addAll);

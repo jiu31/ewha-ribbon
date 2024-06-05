@@ -1,17 +1,23 @@
 package db.view;
 
-import javax.swing.*;
-
 import db.model.DB2024Team13_loginManager;
+
+import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * 로그인 창을 표시하는 클래스입니다.
+ */
 public class DB2024Team13_loginWindow {
     private static final int WINDOW_WIDTH = 900;
     private static final int WINDOW_HEIGHT = 700;
     
+    /**
+     * 로그인 창을 표시하는 메소드입니다.
+     */
     public static void displayLoginWindow() {
         // 로그인 프레임 생성
         JFrame loginFrame = new JFrame("Login");
@@ -28,6 +34,12 @@ public class DB2024Team13_loginWindow {
         loginFrame.setVisible(true);
     }
 
+    /**
+     * 로그인 패널에 컴포넌트를 배치하는 메소드입니다.
+     *
+     * @param loginPanel 로그인 패널
+     * @param loginFrame 로그인 프레임
+     */
     private static void placeComponents(JPanel loginPanel, JFrame loginFrame) {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(10, 10, 10, 10);
@@ -99,7 +111,11 @@ public class DB2024Team13_loginWindow {
         });
     }
 
-    // 메인 윈도우 표시 메소드
+    /**
+     * 메인 윈도우를 표시하는 메소드입니다.
+     *
+     * @param loginFrame 로그인 프레임
+     */
     private static void showMainWindow(JFrame loginFrame) {
         // 로그인 프레임의 모든 컴포넌트 제거
         loginFrame.getContentPane().removeAll();

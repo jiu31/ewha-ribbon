@@ -2,22 +2,30 @@ package db.model;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+/**
+ * 식당을 관리하는 클래스입니다.
+ */
 public class DB2024Team13_restaurantManager {
 
     /**
      * 검색 텍스트를 사용하여 식당을 검색하고 결과를 listModel에 추가합니다.
+     *
      * @param searchText 검색할 텍스트
-     * @param listModel 검색 결과를 추가할 DefaultListModel
+     * @param listModel  검색 결과를 추가할 DefaultListModel
      */
     public static void searchRestaurant(String searchText, DefaultListModel<String> listModel) {
         listModel.clear();
@@ -35,17 +43,42 @@ public class DB2024Team13_restaurantManager {
             se.printStackTrace();
         }
     }
+    
+    /**
+     * 메뉴 이름으로 식당을 검색하는 메소드입니다.
+     *
+     * @param searchText 검색할 메뉴 이름
+     * @return 검색된 식당 이름을 포함하는 Set 객체
+     */
+    public static Set<String> searchRestaurantByMenu(String searchText) {
+        Set<String> restaurantSet = new HashSet<>();
+        String menuQuery = "SELECT DISTINCT rest_name FROM DB2024_menu WHERE menu_name LIKE ? ORDER BY rest_name";
+
+        try (Connection conn = DB2024Team13_connection.getConnection();
+             PreparedStatement pStmt = conn.prepareStatement(menuQuery)) {
+            pStmt.setString(1, "%" + searchText + "%");
+            try (ResultSet rs = pStmt.executeQuery()) {
+                while (rs.next()) {
+                    restaurantSet.add(rs.getString("rest_name"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return restaurantSet;
+    }
 
     /**
      * 식당의 세부 정보를 로드합니다.
+     *
      * @param restaurantName 식당 이름
      * @return 식당 세부 정보가 포함된 Map
      */
     public static Map<String, Object> loadRestaurantDetails(String restaurantName) {
         Map<String, Object> details = new HashMap<>();
         String detailsQuery = "SELECT best_menu, location, breaktime, eat_alone, category, section_name, AVG(star) as avgRating " +
-                              "FROM DB2024_restaurant r LEFT JOIN DB2024_review rv ON r.rest_name = rv.rest_name " +
-                              "WHERE r.rest_name = ? GROUP BY r.rest_name, r.best_menu, r.location, r.breaktime, r.eat_alone, r.category, r.section_name";
+                "FROM DB2024_restaurant r LEFT JOIN DB2024_review rv ON r.rest_name = rv.rest_name " +
+                "WHERE r.rest_name = ? GROUP BY r.rest_name, r.best_menu, r.location, r.breaktime, r.eat_alone, r.category, r.section_name";
         try (Connection conn = DB2024Team13_connection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(detailsQuery)) {
             stmt.setString(1, restaurantName);
@@ -67,14 +100,49 @@ public class DB2024Team13_restaurantManager {
     }
 
     /**
-     * 식당 정보를 업데이트합니다.
+     * 새로운 식당을 데이터베이스에 추가합니다.
+     *
+     * @param name       식당 이름
+     * @param location   위치
+     * @param bestMenu   대표 메뉴
+     * @param category   카테고리
+     * @param breakTime  브레이크타임 여부
+     * @param sectionName 구역 이름
+     * @param eatAlone   혼밥 가능 여부
+     * @return 성공 여부를 boolean 값으로 반환
+     */
+    public static boolean addRestaurant(String name, String location, String bestMenu, String category, boolean breakTime,
+                                        String sectionName, boolean eatAlone) {
+        String restaurantSql = "INSERT INTO DB2024_restaurant (rest_name, location, best_menu, category, breaktime, section_name, eat_alone) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DB2024Team13_connection.getConnection();
+             PreparedStatement restaurantStmt = conn.prepareStatement(restaurantSql)) {
+
+            restaurantStmt.setString(1, name);
+            restaurantStmt.setString(2, location);
+            restaurantStmt.setString(3, bestMenu);
+            restaurantStmt.setString(4, category);
+            restaurantStmt.setBoolean(5, breakTime);
+            restaurantStmt.setString(6, sectionName);
+            restaurantStmt.setBoolean(7, eatAlone);
+            restaurantStmt.executeUpdate();
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * 식당 정보를 수정합니다.
+     *
      * @param restaurantName 식당 이름
-     * @param category 카테고리
-     * @param bestMenu 대표 메뉴
-     * @param section 구역
-     * @param location 위치
-     * @param breaktime 브레이크타임 여부
-     * @param eatAlone 혼밥 가능 여부
+     * @param category       카테고리
+     * @param bestMenu       대표 메뉴
+     * @param section        구역
+     * @param location       위치
+     * @param breaktime      브레이크타임 여부
+     * @param eatAlone       혼밥 가능 여부
      */
     public static void updateRestaurantDetails(String restaurantName, String category, String bestMenu, String section, String location, boolean breaktime, boolean eatAlone) {
         String updateQuery = "UPDATE DB2024_restaurant SET category = ?, best_menu = ?, section_name = ?, location = ?, breaktime = ?, eat_alone = ? WHERE rest_name = ?";
@@ -94,50 +162,49 @@ public class DB2024Team13_restaurantManager {
     }
 
     /**
-     * 식당을 삭제합니다.
+     * 트랜잭션을 사용하여 식당을 삭제합니다.
+     *
      * @param restaurantName 식당 이름
      */
     public static void deleteRestaurant(String restaurantName) {
         String[] deleteQueries = {
-            "DELETE FROM DB2024_order WHERE rest_name = ?",
-            "DELETE FROM DB2024_review WHERE rest_name = ?",
-            "DELETE FROM DB2024_bookmark WHERE rest_name = ?",
-            "DELETE FROM DB2024_menu WHERE rest_name = ?",
-            "DELETE FROM DB2024_restaurant WHERE rest_name = ?"
+                "DELETE FROM DB2024_order WHERE rest_name = ?",
+                "DELETE FROM DB2024_review WHERE rest_name = ?",
+                "DELETE FROM DB2024_bookmark WHERE rest_name = ?",
+                "DELETE FROM DB2024_menu WHERE rest_name = ?",
+                "DELETE FROM DB2024_restaurant WHERE rest_name = ?"
         };
         try (Connection conn = DB2024Team13_connection.getConnection()) {
+            conn.setAutoCommit(false); // 트랜잭션 시작
+
             for (String query : deleteQueries) {
-                executeUpdates(conn, query, restaurantName);
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setString(1, restaurantName);
+                    stmt.executeUpdate();
+                }
             }
+            conn.commit(); // 트랜잭션 커밋
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
-
-    /**
-     * 주어진 쿼리와 파라미터로 데이터베이스 업데이트를 실행합니다.
-     * @param conn 데이터베이스 연결 객체
-     * @param query 실행할 쿼리
-     * @param param 쿼리의 파라미터
-     * @throws SQLException SQL 예외 발생 시
-     */
-    private static void executeUpdates(Connection conn, String query, String param) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, param);
-            stmt.executeUpdate();
+            try (Connection conn = DB2024Team13_connection.getConnection()) {
+                conn.rollback(); // 트랜잭션 롤백
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
         }
     }
 
     /**
      * 식당의 메뉴 항목을 가져옵니다.
+     *
      * @param restaurantName 식당 이름
      * @return ResultSet 객체에 메뉴 항목이 포함되어 반환
      * @throws SQLException SQL 예외 발생 시
      */
     public static ResultSet getMenuItems(String restaurantName) throws SQLException {
         String menuQuery = "SELECT menu_name, price, vegan " +
-                           "FROM DB2024_menu " +
-                           "WHERE rest_name = ?";
+                "FROM DB2024_menu " +
+                "WHERE rest_name = ?";
         Connection conn = DB2024Team13_connection.getConnection();
         PreparedStatement menuStmt = conn.prepareStatement(menuQuery);
         menuStmt.setString(1, restaurantName);
@@ -146,6 +213,7 @@ public class DB2024Team13_restaurantManager {
 
     /**
      * 카테고리를 가져옵니다.
+     *
      * @return 카테고리 목록
      */
     public static String[] getCategories() {
@@ -154,6 +222,7 @@ public class DB2024Team13_restaurantManager {
 
     /**
      * 섹션을 가져옵니다.
+     *
      * @return 섹션 목록
      */
     public static String[] getSections() {
@@ -162,7 +231,8 @@ public class DB2024Team13_restaurantManager {
 
     /**
      * 데이터베이스에서 데이터를 가져옵니다.
-     * @param query 실행할 쿼리
+     *
+     * @param query       실행할 쿼리
      * @param columnLabel 결과에서 가져올 컬럼 라벨
      * @return 데이터 목록
      */
@@ -182,6 +252,7 @@ public class DB2024Team13_restaurantManager {
 
     /**
      * 건물과 식당 정보를 가져옵니다.
+     *
      * @param buildingDropdown 건물 드롭다운
      * @return 건물과 식당 정보가 포함된 Map
      */

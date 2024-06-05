@@ -4,20 +4,32 @@ import db.model.DB2024Team13_restaurantManager;
 import db.model.DB2024Team13_userSessionManager;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Set;
 
+/**
+ * 검색 패널을 생성하는 클래스입니다.
+ */
 public class DB2024Team13_searchWindow {
 
-    // 검색 패널 생성
+	/**
+     * 검색 패널을 생성하는 메소드입니다.
+     *
+     * @param mainWindow 메인 윈도우 객체
+     * @return 생성된 JPanel 객체
+     */
     public static JPanel createSearchPanel(DB2024Team13_mainWindow mainWindow) {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // 검색 바 패널 생성
         JPanel searchBarPanel = new JPanel(new FlowLayout());
+        JLabel searchLabel = new JLabel("식당 이름이나 메뉴 이름으로 검색:");
         JTextField searchTextField = new JTextField(20);
         JButton searchBtn = new JButton("Search");
+        searchBarPanel.add(searchLabel);
         searchBarPanel.add(searchTextField);
         searchBarPanel.add(searchBtn);
 
@@ -56,7 +68,14 @@ public class DB2024Team13_searchWindow {
         // 검색 버튼 클릭 이벤트 핸들러 추가
         searchBtn.addActionListener(e -> {
             String searchText = searchTextField.getText().toLowerCase();
+            restaurantListModel.clear();
+            Set<String> restaurantByMenuSet = DB2024Team13_restaurantManager.searchRestaurantByMenu(searchText);
             DB2024Team13_restaurantManager.searchRestaurant(searchText, restaurantListModel);
+            for (String restaurantName : restaurantByMenuSet) {
+                if (!restaurantListModel.contains(restaurantName)) {
+                    restaurantListModel.addElement(restaurantName);
+                }
+            }
         });
         
         // 초기 모든 식당 목록 불러오기

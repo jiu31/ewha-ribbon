@@ -3,13 +3,24 @@ package db.view;
 import db.model.DB2024Team13_restaurantManager;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.util.Map;
 
+/**
+ * 관리자 - 레스토랑 정보 관리를 위한 창을 표시하는 클래스입니다.
+ */
 public class DB2024Team13_adminWindow {
 
+	/**
+     * 관리자 창을 표시하는 메소드입니다.
+     *
+     * @param restaurant      레스토랑 이름
+     * @param mainDetailPanel 메인 상세 정보 패널
+     */
     public static void showAdminWindow(String restaurant, JPanel mainDetailPanel) {
         JFrame frame = new JFrame("관리자 - 레스토랑 정보 관리");
         frame.setSize(400, 600);

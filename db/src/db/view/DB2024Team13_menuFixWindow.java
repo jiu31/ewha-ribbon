@@ -3,14 +3,24 @@ package db.view;
 import db.model.DB2024Team13_menuManager;
 
 import javax.swing.*;
+
 import java.awt.*;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * 메뉴 수정 창을 관리하는 클래스입니다.
+ */
 public class DB2024Team13_menuFixWindow {
 	
-	//메뉴 수정 창
-    public static void showMenuFixWindow(String restaurant, JPanel mainDetailPanel) {
+	/**
+     * 메뉴 수정 창을 표시하는 메소드입니다.
+     *
+     * @param restaurant 레스토랑 이름
+     * @param mainDetailPanel 메인 상세 정보 패널
+     */
+	public static void showMenuFixWindow(String restaurant, JPanel mainDetailPanel) {
         //프레임 설정
     	JFrame frame = new JFrame("관리자 - 메뉴 수정");
         frame.setSize(600, 400);
@@ -42,7 +52,14 @@ public class DB2024Team13_menuFixWindow {
         frame.setVisible(true);
     }
     
-    //메뉴 추가 패널 생성
+	/**
+     * 메뉴 추가 패널을 생성하는 메소드입니다.
+     *
+     * @param restaurant 레스토랑 이름
+     * @param menuPanel 메뉴 패널
+     * @param mainDetailPanel 메인 상세 정보 패널
+     * @return 생성된 JPanel 객체
+     */
     private static JPanel createAddMenuPanel(String restaurant, JPanel menuPanel, JPanel mainDetailPanel) {
         JPanel addMenuPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -95,7 +112,16 @@ public class DB2024Team13_menuFixWindow {
         return addMenuPanel;
     }
     
-    //필요 시 라벨 및 필드를 추가할 수 있음
+    /**
+     * 라벨 및 필드를 추가하는 메소드입니다.
+     *
+     * @param panel 패널
+     * @param labelText 라벨 텍스트
+     * @param field 필드
+     * @param gbc GridBagConstraints 객체
+     * @param y y 좌표
+     * @return 추가된 필드
+     */
     private static <T extends JComponent> T addLabeledField(JPanel panel, String labelText, T field, GridBagConstraints gbc, int y) {
         gbc.gridx = 0;
         gbc.gridy = y;
@@ -107,7 +133,13 @@ public class DB2024Team13_menuFixWindow {
         return field;
     }
     
-    //기본 메뉴를 불러와 패널에 추가함
+    /**
+     * 메뉴 항목을 불러와 패널에 추가하는 메소드입니다.
+     *
+     * @param restaurantName 레스토랑 이름
+     * @param menuPanel 메뉴 패널
+     * @param mainDetailPanel 메인 상세 정보 패널
+     */
     private static void loadMenuItems(String restaurantName, JPanel menuPanel, JPanel mainDetailPanel) {
         menuPanel.removeAll();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -133,7 +165,17 @@ public class DB2024Team13_menuFixWindow {
         menuPanel.repaint();
     }
     
-    //개별 메뉴 항목을 생성함
+    /**
+     * 개별 메뉴 항목 패널을 생성하는 메소드입니다.
+     *
+     * @param restaurantName 레스토랑 이름
+     * @param menuName 메뉴 이름
+     * @param price 가격
+     * @param isVegan 비건 여부
+     * @param menuPanel 메뉴 패널
+     * @param mainDetailPanel 메인 상세 정보 패널
+     * @return 생성된 JPanel 객체
+     */
     private static JPanel createMenuItemPanel(String restaurantName, String menuName, int price, boolean isVegan, JPanel menuPanel, JPanel mainDetailPanel) {
         JPanel menuItemPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

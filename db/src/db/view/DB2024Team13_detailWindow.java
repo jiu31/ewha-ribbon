@@ -5,20 +5,32 @@ import db.model.DB2024Team13_bookmarkManager;
 import db.model.DB2024Team13_userSessionManager;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.Map;
 
+/**
+ * 레스토랑 상세 정보를 표시하는 창을 관리하는 클래스입니다.
+ */
 public class DB2024Team13_detailWindow {
 
     private static final Color COLOR_BOOKMARKED = new Color(0, 150, 0); // 초록색
     private static final Color COLOR_NOT_BOOKMARKED = new Color(200, 200, 200); // 기본 버튼 색상
     private static final Color COLOR_BOOKMARKED_TEXT = Color.WHITE; // 북마크된 상태의 텍스트 색상
     private static final Color COLOR_NOT_BOOKMARKED_TEXT = Color.BLACK; // 북마크되지 않은 상태의 텍스트 색상
-
+    
+    /**
+     * 레스토랑 상세 정보를 표시하는 패널을 생성하는 메소드입니다.
+     *
+     * @param restaurant 레스토랑 이름
+     * @return 설정된 JPanel 객체
+     */
     public static JPanel createDetailPanel(String restaurant) {
         boolean isAdmin = DB2024Team13_userSessionManager.getInstance().isAdmin();
         String studentId = DB2024Team13_userSessionManager.getInstance().getStudentId();
@@ -98,6 +110,13 @@ public class DB2024Team13_detailWindow {
         return mainDetailPanel;
     }
 
+    /**
+     * 북마크 버튼을 생성하는 메소드입니다.
+     *
+     * @param studentId 학생 ID
+     * @param restaurant 레스토랑 이름
+     * @return 생성된 JButton 객체
+     */
     private static JButton createBookmarkButton(String studentId, String restaurant) {
         JButton bookmarkButton = new JButton("★");
         bookmarkButton.setFont(new Font("나눔고딕", Font.BOLD, 24));
@@ -134,6 +153,13 @@ public class DB2024Team13_detailWindow {
         return bookmarkButton;
     }
 
+    /**
+     * 상세 정보 패널에 레이블을 추가하는 메소드입니다.
+     *
+     * @param panel 추가할 JPanel 객체
+     * @param text 레이블 텍스트
+     * @param name 레이블 이름
+     */
     private static void addDetailLabel(JPanel panel, String text, String name) {
         JLabel label = createDetailLabel(text);
         label.setName(name);
@@ -143,18 +169,38 @@ public class DB2024Team13_detailWindow {
         panel.add(createSeparator());
     }
 
+    /**
+     * 상세 정보 레이블을 생성하는 메소드입니다.
+     *
+     * @param text 레이블 텍스트
+     * @return 생성된 JLabel 객체
+     */
     private static JLabel createDetailLabel(String text) {
         JLabel detailLabel = new JLabel(text);
         detailLabel.setFont(new Font("나눔고딕", Font.BOLD, 15));
         return detailLabel;
     }
 
+    /**
+     * 구분선을 생성하는 메소드입니다.
+     *
+     * @return 생성된 JSeparator 객체
+     */
     private static JSeparator createSeparator() {
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
         separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
         return separator;
     }
 
+    /**
+     * 관리자용 액션 리스너를 추가하는 메소드입니다.
+     *
+     * @param isAdmin 관리자 여부
+     * @param restaurant 레스토랑 이름
+     * @param mainDetailPanel 메인 상세 정보 패널
+     * @param menuEditButton 메뉴 수정 버튼
+     * @param actionButton 액션 버튼
+     */
     private static void addAdminActionListeners(boolean isAdmin, String restaurant, JPanel mainDetailPanel, JButton menuEditButton, JButton actionButton) {
         if (isAdmin) {
             menuEditButton.addActionListener(new ActionListener() {
@@ -180,6 +226,12 @@ public class DB2024Team13_detailWindow {
         }
     }
 
+    /**
+     * 상세 정보 레이블을 업데이트하는 메소드입니다.
+     *
+     * @param details 레스토랑 세부 정보
+     * @param mainDetailPanel 메인 상세 정보 패널
+     */
     private static void updateDetailLables(Map<String, Object> details, JPanel mainDetailPanel) {
         setLabelText(mainDetailPanel, "avgRatingLabel", "별점: " + String.format("%.2f", (Double) details.getOrDefault("avgRating", 0.0)));
         setLabelText(mainDetailPanel, "categoryLabel", "카테고리: " + details.getOrDefault("category", "N/A"));
@@ -190,7 +242,14 @@ public class DB2024Team13_detailWindow {
         setLabelText(mainDetailPanel, "eatAloneLabel", "혼밥 가능 여부: " + ((boolean) details.getOrDefault("eatAlone", false) ? "O" : "X"));
         setLabelText(mainDetailPanel, "breaktimeLabel", "브레이크타임 유무: " + ((boolean) details.getOrDefault("breaktime", false) ? "O" : "X"));
     }
-
+    
+    /**
+     * 메뉴 레이블을 업데이트하는 메소드입니다.
+     *
+     * @param rs 메뉴 정보 ResultSet 객체
+     * @param mainDetailPanel 메인 상세 정보 패널
+     * @throws SQLException SQL 예외 발생 시
+     */
     private static void updateMenuLabels(ResultSet rs, JPanel mainDetailPanel) throws SQLException {
         JPanel menuInfoPanel = (JPanel) findComponentByName(mainDetailPanel, "menuInfoPanel");
         if (menuInfoPanel == null) {
@@ -215,13 +274,27 @@ public class DB2024Team13_detailWindow {
         menuInfoPanel.repaint();
     }
 
+    /**
+     * 컨테이너에서 레이블 텍스트를 설정하는 메소드입니다.
+     *
+     * @param container 대상 Container 객체
+     * @param labelName 레이블 이름
+     * @param text 설정할 텍스트
+     */
     private static void setLabelText(Container container, String labelName, String text) {
         JLabel label = (JLabel) findComponentByName(container, labelName);
         if (label != null) {
             label.setText(text);
         }
     }
-
+    
+    /**
+     * 컨테이너에서 이름으로 컴포넌트를 찾는 메소드입니다.
+     *
+     * @param container 대상 Container 객체
+     * @param name 컴포넌트 이름
+     * @return 찾은 컴포넌트, 없을 경우 null
+     */
     private static Component findComponentByName(Container container, String name) {
         if (container == null) {
             return null;
@@ -240,6 +313,12 @@ public class DB2024Team13_detailWindow {
         return null;
     }
 
+    /**
+     * 상세 정보 패널을 새로고침하는 메소드입니다.
+     *
+     * @param mainDetailPanel 메인 상세 정보 패널
+     * @param restaurant 레스토랑 이름
+     */
     public static void refreshDetailPanel(JPanel mainDetailPanel, String restaurant) {
         Map<String, Object> details = DB2024Team13_restaurantManager.loadRestaurantDetails(restaurant);
         updateDetailLables(details, mainDetailPanel);

@@ -1,11 +1,16 @@
 package db.view;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 메인 윈도우를 관리하는 클래스입니다.
+ */
 public class DB2024Team13_mainWindow {
     // 상수 정의
     private static final int WINDOW_WIDTH = 900;
@@ -22,7 +27,9 @@ public class DB2024Team13_mainWindow {
     private final List<JButton> sidebarButtonList = new ArrayList<>();
     private JButton mainButton;
 
-    // 메인 윈도우 실행 메소드
+    /**
+     * 메인 윈도우를 실행하는 메소드입니다.
+     */
     public static void launchMainWindow() {
         SwingUtilities.invokeLater(() -> {
             DB2024Team13_mainWindow app = new DB2024Team13_mainWindow();
@@ -31,13 +38,19 @@ public class DB2024Team13_mainWindow {
         });
     }
 
-    // 생성자
+    /**
+     * 생성자
+     */
     public DB2024Team13_mainWindow() {
         // 초기 컨텐츠를 "메인" 패널로 설정하고 사이드바의 "메인" 버튼 하이라이트
         displayContent(DB2024Team13_customWindow.createSelectionPanel(this));
     }
 
-    // 메인 프레임 생성
+    /**
+     * 메인 프레임을 생성하는 메소드입니다.
+     *
+     * @return 생성된 JFrame 객체
+     */
     private JFrame createMainFrame() {
         JFrame frame = new JFrame("EwhaRibbon");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,7 +64,11 @@ public class DB2024Team13_mainWindow {
         return frame;
     }
 
-    // 타이틀 바 패널 생성
+    /**
+     * 타이틀 바 패널을 생성하는 메소드입니다.
+     *
+     * @return 생성된 JPanel 객체
+     */
     public JPanel createTitleBar() {
         JPanel titleBarPanel = new JPanel(new BorderLayout());
         titleBarPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, 50));
@@ -65,7 +82,11 @@ public class DB2024Team13_mainWindow {
         return titleBarPanel;
     }
 
-    // 사이드바 패널 생성
+    /**
+     * 사이드바 패널을 생성하는 메소드입니다.
+     *
+     * @return 생성된 JPanel 객체
+     */
     public JPanel createSidebar() {
         JPanel sidebarPanel = new JPanel();
         sidebarPanel.setPreferredSize(new Dimension(200, WINDOW_HEIGHT));
@@ -88,7 +109,14 @@ public class DB2024Team13_mainWindow {
         return sidebarPanel;
     }
 
-    // 사이드바 버튼 추가
+    /**
+     * 사이드바 버튼을 추가하는 메소드입니다.
+     *
+     * @param sidebarPanel 사이드바 패널
+     * @param text 버튼 텍스트
+     * @param actionListener 버튼 액션 리스너
+     * @return 생성된 JButton 객체
+     */
     private JButton addSidebarButton(JPanel sidebarPanel, String text, ActionListener actionListener) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -104,7 +132,11 @@ public class DB2024Team13_mainWindow {
         return button;  // 생성된 버튼을 반환
     }
 
-    // 로그아웃 버튼 추가
+    /**
+     * 로그아웃 버튼을 추가하는 메소드입니다.
+     *
+     * @param sidebarPanel 사이드바 패널
+     */
     private void addLogoutButton(JPanel sidebarPanel) {
         JButton logoutButton = new JButton("로그아웃");
         logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -119,7 +151,11 @@ public class DB2024Team13_mainWindow {
         sidebarPanel.add(logoutButton);
     }
 
-    // 선택된 사이드바 버튼 강조
+    /**
+     * 선택된 사이드바 버튼을 강조하는 메소드입니다.
+     *
+     * @param selectedButton 선택된 버튼
+     */
     private void setSelectedButtonHighlight(JButton selectedButton) {
         for (JButton button : sidebarButtonList) {
             if (button == selectedButton) {
@@ -132,18 +168,30 @@ public class DB2024Team13_mainWindow {
         }
     }
 
-    // 메인 컨텐츠 패널 반환
+    /**
+     * 메인 컨텐츠 패널을 반환하는 메소드입니다.
+     *
+     * @return 메인 패널 객체
+     */
     public JPanel getMainPanel() {
         return mainPanel;
     }
 
-    // 상세 정보 표시
+    /**
+     * 상세 정보를 표시하는 메소드입니다.
+     *
+     * @param restaurant 레스토랑 이름
+     */
     public void displayDetail(String restaurant) {
         JPanel detailPanel = DB2024Team13_detailWindow.createDetailPanel(restaurant);
         displayContent(detailPanel);
     }
 
-    // 컨텐츠 표시
+    /**
+     * 컨텐츠를 표시하는 메소드입니다.
+     *
+     * @param component 표시할 컴포넌트
+     */
     private void displayContent(Component component) {
         mainPanel.removeAll();
         mainPanel.add(component, BorderLayout.CENTER);
