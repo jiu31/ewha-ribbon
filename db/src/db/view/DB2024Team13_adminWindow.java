@@ -11,7 +11,9 @@ import java.awt.event.ActionListener;
 import java.util.Map;
 
 /**
- * 관리자 - 레스토랑 정보 관리를 위한 창을 표시하는 클래스입니다.
+ * 관리자 - 레스토랑 정보 관리를 위한 창을 표시하는 클래스입니다. 
+ * <p>이 클래스는 관리자가 레스토랑의 정보를 관리할 수 있는 창을 생성하고 표시하는 기능을 제공합니다. 
+ * 레스토랑 정보의 추가, 수정, 삭제 기능을 포함합니다.</p>
  */
 public class DB2024Team13_adminWindow {
 

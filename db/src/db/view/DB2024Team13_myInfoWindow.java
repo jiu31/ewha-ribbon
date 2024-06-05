@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 
 /**
  * '내 정보' 패널을 생성하는 클래스입니다.
+ * <p>이 클래스는 사용자의 개인 정보를 표시하고, 북마크 목록, 리뷰 조회, 주문 조회 등의 기능을 제공하는 패널을 생성합니다.</p>
  */
 public class DB2024Team13_myInfoWindow {
 
