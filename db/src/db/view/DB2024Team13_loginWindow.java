@@ -1,39 +1,51 @@
 package db.view;
 
-import javax.swing.*;
+import db.model.DB2024Team13_loginManager;
 
-import db.controller.DB2024Team13_login;
+import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * 로그인 창을 표시하는 클래스입니다.
+ */
 public class DB2024Team13_loginWindow {
     private static final int WINDOW_WIDTH = 900;
     private static final int WINDOW_HEIGHT = 700;
     
+    /**
+     * 로그인 창을 표시하는 메소드입니다.
+     */
     public static void displayLoginWindow() {
-        // Create login frame
+        // 로그인 프레임 생성
         JFrame loginFrame = new JFrame("Login");
         loginFrame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        loginFrame.setLocationRelativeTo(null); // Center the frame
+        loginFrame.setLocationRelativeTo(null);
 
-        // Create login panel
+        // 로그인 패널 생성
         JPanel loginPanel = new JPanel(new GridBagLayout());
         loginFrame.add(loginPanel);
         placeComponents(loginPanel, loginFrame);
 
-        // Make the frame visible
+        // 프레임을 보이게 설정
         loginFrame.setVisible(true);
     }
 
+    /**
+     * 로그인 패널에 컴포넌트를 배치하는 메소드입니다.
+     *
+     * @param loginPanel 로그인 패널
+     * @param loginFrame 로그인 프레임
+     */
     private static void placeComponents(JPanel loginPanel, JFrame loginFrame) {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(10, 10, 10, 10);
         constraints.fill = GridBagConstraints.HORIZONTAL;
 
-        // Create title label
+        // 타이틀 레이블 생성
         JLabel titleLabel = new JLabel("EwhaRibbon");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -43,7 +55,7 @@ public class DB2024Team13_loginWindow {
         constraints.anchor = GridBagConstraints.CENTER;
         loginPanel.add(titleLabel, constraints);
 
-        // Create student ID label
+        // 학번 레이블 생성
         JLabel studentIdLabel = new JLabel("학번:");
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -51,46 +63,46 @@ public class DB2024Team13_loginWindow {
         constraints.anchor = GridBagConstraints.WEST;
         loginPanel.add(studentIdLabel, constraints);
 
-        // Create student ID text field
+        // 학번 입력 필드 생성
         JTextField studentIdTextField = new JTextField(20);
         constraints.gridx = 1;
         constraints.gridy = 1;
         loginPanel.add(studentIdTextField, constraints);
 
-        // Create password label
+        // 비밀번호 레이블 생성
         JLabel passwordLabel = new JLabel("비밀번호:");
         constraints.gridx = 0;
         constraints.gridy = 2;
         loginPanel.add(passwordLabel, constraints);
 
-        // Create password field
+        // 비밀번호 입력 필드 생성
         JPasswordField passwordField = new JPasswordField(20);
         constraints.gridx = 1;
         constraints.gridy = 2;
         loginPanel.add(passwordField, constraints);
 
-        // Create login button
+        // 로그인 버튼 생성
         JButton loginBtn = new JButton("로그인");
         loginBtn.setBackground(new Color(0, 80, 0));
         loginBtn.setForeground(Color.WHITE);
         loginBtn.setOpaque(true);
         loginBtn.setBorderPainted(false);
-
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.CENTER;
         loginPanel.add(loginBtn, constraints);
 
-        // Add action listener to login button
+        // 로그인 버튼에 액션 리스너 추가
         loginBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String user = studentIdTextField.getText();
                 String password = new String(passwordField.getPassword());
 
-                if (DB2024Team13_login.validateLogin(user, password)) {
+                if (DB2024Team13_loginManager.validateLogin(user, password)) {
                     JOptionPane.showMessageDialog(loginPanel, "로그인 성공!");
+                    // 로그인 성공 시 메인위도우 표시
                     showMainWindow(loginFrame);
                 } else {
                     JOptionPane.showMessageDialog(loginPanel, "잘못된 학번 또는 비밀번호");
@@ -99,21 +111,25 @@ public class DB2024Team13_loginWindow {
         });
     }
 
-    // Display main window method
+    /**
+     * 메인 윈도우를 표시하는 메소드입니다.
+     *
+     * @param loginFrame 로그인 프레임
+     */
     private static void showMainWindow(JFrame loginFrame) {
-        // Remove all components from the login frame
+        // 로그인 프레임의 모든 컴포넌트 제거
         loginFrame.getContentPane().removeAll();
         loginFrame.repaint();
         loginFrame.setTitle("EwhaRibbon");
 
-        // Create main window components
+        // 메인 윈도우 컴포넌트 생성
         DB2024Team13_mainWindow mainWindow = new DB2024Team13_mainWindow();
         loginFrame.setLayout(new BorderLayout());
         loginFrame.add(mainWindow.createTitleBar(), BorderLayout.NORTH);
         loginFrame.add(mainWindow.createSidebar(), BorderLayout.WEST);
         loginFrame.add(mainWindow.getMainPanel(), BorderLayout.CENTER);
 
-        // Refresh the frame
+        // 프레임 갱신
         loginFrame.revalidate();
         loginFrame.repaint();
     }
