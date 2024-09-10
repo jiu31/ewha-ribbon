@@ -51,6 +51,10 @@ EwhaRibbon is a Java desktop application designed specifically for students of E
     java DB2024Team13_main
     ```
 
+6. **View Javadoc**:
+   
+   You can access the Javadoc documentation by clicking on `index.html` located in the `db/doc` directory.
+
 Make sure that your MySQL server is running and configured to allow connections before running the app.
 
 ## 🗃️ Database Structure
