@@ -19,10 +19,13 @@ EwhaRibbon is a Java desktop application designed specifically for students of E
   - **User & Admin Interfaces**: Distinct interfaces for users and admins with secure login and logout options.
 
 ## 💻 Technologies Used
-- **Java**: Core programming language for the application.
-- **Swing & AWT**: creating the graphical user interface (GUI).
-- **JDBC**: handling database interactions.
-- **MySQL**: storing restaurant data.
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
+
+- **JAVA** - Core programming language for the application.
+- **Swing & AWT** - creating the graphical user interface (GUI).
+- **JDBC** - handling database interactions.
+- **MySQL** - storing restaurant data.
 
 ## ⚙️ Installation & Setup
 
